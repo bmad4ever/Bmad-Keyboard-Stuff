@@ -115,7 +115,7 @@ RETURN
 
 LazyMode := False
 #if LazyMode
-CapsLock & Pause::            ; Deactivate Lazy Mode
+^!CapsLock::            ; Deactivate Lazy Mode
   LazyMode := False  
   Menu, Tray, Icon, %icon%
   
@@ -131,7 +131,7 @@ RETURN
 ; https://autohotkey.com/board/topic/132938-auto-capitalize-first-letter-of-sentence/
 
 #if not LazyMode
-CapsLock & Pause::            ; Activate Lazy Mode
+^!CapsLock::            ; Activate Lazy Mode
  LazyMode := True  
 
 ; set the icon that indicates lazy mode is active
@@ -142,12 +142,13 @@ CapsLock & Pause::            ; Activate Lazy Mode
  R := True        ; always capitalize after typing return
  E := "{Return}"  ; list of endkeys to trigger capitalizing
  C := True        ; add space after comma
+ D := True        ; add space after colon or semicolon
 ; --- ---  --- ---  --- ---  
 
  SetKeyDelay, -1  ; avoid lag related mistakes, such as multiple upper cases
  Loop
  {   
-    Input, key, C I L1 V, %E%
+    Input, key, C1 I L1 V, %E%
     on_endkey := R ? InStr(ErrorLevel,"EndKey") : false
     
     if not LazyMode
@@ -175,7 +176,9 @@ CapsLock & Pause::            ; Activate Lazy Mode
             x := True  ; trigger set
         else if (C && "," == key)
            Send {Space}
-        
+        else if (D && (":" == key || ";" == key))
+           Send {Space}
+           
         key_prev := key
     }
     else if on_endkey  ; Key is blank due to Endkey matching

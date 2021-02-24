@@ -13,7 +13,7 @@ Adds behaviours related to letters' case.
 | `Alt + CapsLock` | On selected text or on word behind cursor - Converts all letters to lowercase|
 | `Shift + Ctrl + CapsLock` | Converts all letters behind the cursor to uppercase (does nothing with text selection, will execute the same as `Ctrl + CapsLock`)|
 | `Shift + Alt + CapsLock` | Converts all letters behind the cursor to lowercase (does nothing with text selection, will execute the same as `Alt + CapsLock`)|
-| `CapsLock + Pause` | Toggle Lazy Mode |
+| `Ctrl + Alt + CapsLock` | Toggle Lazy Mode |
 
 
 
@@ -31,6 +31,7 @@ Lazy Mode options can be tweaked arround line 144.
  R := True        ; always capitalize after typing return
  E := "{Return}"  ; list of endkeys to trigger capitalizing
  C := True        ; add space after comma
+ D := True        ; add space after colon or semicolon
 ; --- ---  --- ---  --- ---
 ```
 
