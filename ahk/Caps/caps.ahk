@@ -131,16 +131,16 @@ RETURN
 ; https://autohotkey.com/board/topic/132938-auto-capitalize-first-letter-of-sentence/
 
 #if not AutoMode
-<^>!CapsLock::            ; Activate Lazy Mode
+<^>!CapsLock::            ; Activate Auto Mode
  AutoMode := True  
 
-; set the icon that indicates lazy mode is active
+; set the icon that indicates auto mode is active
  Menu, Tray, Icon, %iconLazyMode%
  
-; --- Lazy Mode Options ---
+; --- Auto Mode Options ---
  x := True        ; start off script with an assumed capital (true)
  R := True        ; always capitalize after typing return
- E := "{Return}"  ; list of endkeys to trigger capitalizing
+ E := "{Return}"  ; list of end-keys to trigger capitalizing
  C := True        ; add space after comma
  D := True        ; add space after colon or semicolon
 ; --- ---  --- ---  --- ---  
@@ -151,7 +151,7 @@ RETURN
     Input, key, C1 I L1 V, %E%
     on_endkey := R ? InStr(ErrorLevel,"EndKey") : false
     
-    if not LazyMode
+    if not AutoMode
         break
         
     ; when triggered and lower case:
@@ -181,7 +181,7 @@ RETURN
            
         key_prev := key
     }
-    else if on_endkey  ; Key is blank due to Endkey matching
+    else if on_endkey  ; Key is blank due to End-key matching
     {
         x := True  ; trigger set
         key_prev := "EndKey"

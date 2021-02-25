@@ -12,23 +12,23 @@ Adds behaviours related to letters' case.
 | `Shift + Alt + CapsLock` | Converts all letters behind the cursor to lowercase (does nothing with text selection, will execute the same as `Alt + CapsLock`)|
 | `Ctrl + Alt + CapsLock` | On selected text or on word behind cursor - capitalizes word(s) |
 | `Shift + Ctrl + Alt + CapsLock` | Capitalizes all words behind the cursor |
-| `CapsLock + AltGr` | Toggle Lazy Mode |
+| `CapsLock + AltGr` | Toggle Auto Mode |
 
 
 
-## Lazy Mode
+## Auto Mode
 
 Will auto capitalize words and add spaces after punctuation.
 
-You can check whether Lazy Mode is active or not by the script's icon.
+You can check whether Auto Mode is active or not by the script's icon.
 
-Lazy Mode options can be tweaked arround line 144.
+Auto Mode options can be tweaked around line 144.
 
 ```
-; --- Lazy Mode Options ---
+; --- Auto Mode Options ---
  x := True        ; start off script with an assumed capital (true)
  R := True        ; always capitalize after typing return
- E := "{Return}"  ; list of endkeys to trigger capitalizing
+ E := "{Return}"  ; list of end-keys to trigger capitalizing
  C := True        ; add space after comma
  D := True        ; add space after colon or semicolon
 ; --- ---  --- ---  --- ---
