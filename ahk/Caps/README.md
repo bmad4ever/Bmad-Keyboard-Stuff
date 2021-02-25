@@ -22,7 +22,7 @@ Will auto capitalize words and add spaces after punctuation.
 
 You can check whether Auto Mode is active or not by the script's icon.
 
-Auto Mode options can be tweaked around line 144.
+Auto Mode options can be tweaked around line 140.
 
 ```
 ; --- Auto Mode Options ---
