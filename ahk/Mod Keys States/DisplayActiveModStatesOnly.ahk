@@ -18,16 +18,16 @@ windowHeight := iconSize*4
 x := A_ScreenWidth - windowWidth * 5 // 3 
 y := A_ScreenHeight * 12 // 15 - windowHeight 
 
-Gui, 1:-caption -toolwindow -border +alwaysOnTop +LastFound +E0x20
+Gui, 1:-caption -toolwindow -border +alwaysOnTop +LastFound +E0x20 +ToolWindow
 Gui, 1:Add, Picture, w%iconSize% h%iconSize% x0 y0 vShiftPic, .\ShiftOff.ico
  
-Gui, 2:-caption -toolwindow -border +alwaysOnTop +LastFound +E0x20
+Gui, 2:-caption -toolwindow -border +alwaysOnTop +LastFound +E0x20 +ToolWindow
 Gui, 2:Add, Picture, w%iconSize% h%iconSize% x0 y0 vCtrlPic, .\CtrlOff.ico
 
-Gui, 3:-caption -toolwindow -border +alwaysOnTop +LastFound +E0x20
+Gui, 3:-caption -toolwindow -border +alwaysOnTop +LastFound +E0x20 +ToolWindow
 Gui, 3:Add, Picture, w%iconSize% h%iconSize% x0 y0 vAltPic, .\AltOff.ico
 
-Gui, 4:-caption -toolwindow -border +alwaysOnTop +LastFound +E0x20
+Gui, 4:-caption -toolwindow -border +alwaysOnTop +LastFound +E0x20 +ToolWindow
 Gui, 4:Add, Picture, w%iconSize% h%iconSize% x0 y0 vWinPic, .\WinOff.ico
 
 SetTimer, update, 1

@@ -109,17 +109,17 @@ RETURN
 
 
 ; __________________________________________________________________________
-; Lazy Mode
-;    Lazy mode allows to auto inputs spacing and caps.
+; Auto Mode
+;    Auto mode allows to auto inputs spacing and caps.
 ; __________________________________________________________________________
 
-LazyMode := False
-#if LazyMode
-^!CapsLock::            ; Deactivate Lazy Mode
-  LazyMode := False  
+AutoMode := False
+#if AutoMode
+<^>!CapsLock::            ; Deactivate Auto Mode
+  AutoMode := False  
   Menu, Tray, Icon, %icon%
   
-  ; workarround to unblock Input func
+  ; workaround to unblock Input func
   ; will allow to turn mode on without any input being given after a deactivation
   ; I am not aware of any side effects
   Input  
@@ -130,9 +130,9 @@ RETURN
 ; following solution was addapted from 3rror answer found on ahk forum:
 ; https://autohotkey.com/board/topic/132938-auto-capitalize-first-letter-of-sentence/
 
-#if not LazyMode
-^!CapsLock::            ; Activate Lazy Mode
- LazyMode := True  
+#if not AutoMode
+<^>!CapsLock::            ; Activate Lazy Mode
+ AutoMode := True  
 
 ; set the icon that indicates lazy mode is active
  Menu, Tray, Icon, %iconLazyMode%
