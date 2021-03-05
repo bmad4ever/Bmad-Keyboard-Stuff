@@ -7,8 +7,79 @@
 /*
     - When using LT(layer, key), double tap key and keep it pressed to spam key without activating layer
     - Use left thumb cluster with key caps that have a 'plane profile' (with small bevel margins) in order to facilitate comboing shift, ctrl and alt
+    - Use tilted keys to swipe type to a lower row 
 */  
-    
+
+
+
+
+// -------------------------------------------------------------------------------------------------------    
+//   redifine colors names     
+// -------------------------------------------------------------------------------------------------------    
+#if true
+
+//failed to reproduce exact same behavior as the system. 
+//as close as I could get without jeopardizing the typing experience. 
+//The default system is behavior is the following:
+//  With key and shift pressed, it should pause when when shift if released and then spam kc1.
+//  With key pressed, it should stop inputing when shift is pressed.
+//The implemented behavior does not allow spam when key is being pressed, only allows for a single character per click.
+
+bool prevShiftState = false;
+bool thisShiftState = false;
+bool oneShotedShift = false;
+//uint16_t prevActiveCustomKeyCode = 0;   
+uint16_t kc;
+
+void SHIFT_MOD(uint16_t kc1,uint16_t kc2, keyrecord_t *record) 
+{ 
+      
+      if (record->event.pressed ) { 
+        if (thisShiftState) {  
+          if ((QK_LSFT & kc2) == 0) {
+              if(oneShotedShift) clear_oneshot_mods(); 
+              unregister_mods(MOD_BIT(KC_LSFT)); 
+          }
+          register_code(kc = kc2); 
+          if(!oneShotedShift) register_mods(MOD_BIT(KC_LSFT));
+        } else {
+            if ((QK_LSFT & kc1) != 0) register_mods(MOD_BIT(KC_LSFT));
+            register_code(kc = kc1); 
+            unregister_mods(MOD_BIT(KC_LSFT));
+        }
+        unregister_code(kc); //simplify and make consistent. user can't loop neither one of the characters.
+      }
+}
+
+void SHIFT_MOD_MARK(uint16_t kc1, keyrecord_t *record) 
+{ 
+      if (record->event.pressed ) { 
+        if (thisShiftState) {  
+          clear_oneshot_mods();
+          unregister_mods(MOD_BIT(KC_LSFT)); 
+          
+          register_mods(MOD_BIT(KC_LALT));
+          
+          SEND_STRING(SS_TAP(X_P8) SS_TAP(X_P2) SS_TAP(X_P5)  SS_TAP(X_P1) );
+          
+          unregister_mods(MOD_BIT(KC_LALT));
+          
+          if(!oneShotedShift) register_mods(MOD_BIT(KC_LSFT));
+        } else {
+            if ((QK_LSFT & kc1) != 0) register_mods(MOD_BIT(KC_LSFT));
+            register_code(kc = kc1); 
+            unregister_mods(MOD_BIT(KC_LSFT));
+            unregister_code(kc); 
+        }
+      }
+}
+
+#define SHIFT_CLEAR_MOD() \
+{ \
+      unregister_code(kc); \
+}
+        //  prevActiveCustomKeyCode = 0; 
+#endif    
 // -------------------------------------------------------------------------------------------------------    
 //   redifine colors names     
 // -------------------------------------------------------------------------------------------------------    
@@ -66,7 +137,7 @@
 #define _BASE 0
 //used to setup the keyboard' layout
 
-#define _BEAKL 1
+#define _KIYUBI 1
 //letters layouts only. swaps qwerty layout to beakl. Mind that OS must be using qwerty in order for beakl to work.
 
 #define _QWERTY 2
@@ -109,7 +180,17 @@
 enum custom_keycodes {
   //macro related
   QMKBEST = SAFE_RANGE,
-//  MOUSE_L,
+  QUOxGRV,  // quote  or  grave when shifted
+  CMMxSCL,  // comma  or  semicolon when shifted
+  DOTxCOL,  // dot  or  colon when shifted
+  SCLxAT,    // semicolon   or   at sign when shifted
+  DQOxHIF,  // double quote  or  hifen when shifted
+  CMMxQUO,  // comma  or  quote when shifted
+  //SCLxGRV,  // semicolon  or  grave when shifted
+  //COLxHIF,  // colon  or  hifen when shifted
+  DOTxDQO,  // dot  or  double quote when shifted
+  COLxRMK  // colon   or   reference mark when shifted 
+// MOUSE_L,
 };
 
 // Shortcuts to make keymap more readable
@@ -147,6 +228,7 @@ enum custom_keycodes {
 #define OSM_SFT OSM(MOD_LSFT)
 #define OSM_CTL OSM(MOD_LCTL)
 #define OSM_ALT OSM(MOD_LALT)
+#define OSM_RLT OSM(MOD_RALT)
 #define CTL_ALT OSM(MOD_LCTL | MOD_LALT)
 #define OSM_MEH OSM(MOD_MEH)
 
@@ -156,7 +238,7 @@ enum custom_keycodes {
 
 #define TO_BASE TO(_BASE)
 #define TO_QWER TO(_QWERTY)
-#define TO_BEAK TO(_BEAKL)
+#define TO_KIYUB TO(_KIYUBI)
 
 
 #define TG_MOSE TG(_MOUSE)
@@ -267,6 +349,8 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 #endif
 
+
+
 //,UC_M_LN ,UC_M_WI ,UC_M_WC ,UC_M_OS
 
 // -------------------------------------------------------------------------------------------------------    
@@ -287,11 +371,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,                                            XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_INS  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_TAB  ,                          KC_RALT ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_DEL  ,
+     KC_INS  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_TAB  ,                          OSM_RLT ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_QUES ,XXXXXXX ,SH_TG   ,TO_QWER ,TO_BEAK ,RESET   ,KC_ENT  ,                          KC_ESC  ,RESET   ,TO_BEAK ,TO_QWER ,SH_TG   ,XXXXXXX ,KC_EXLM ,
+     KC_CAPS ,XXXXXXX ,SH_TG   ,TO_QWER ,TO_KIYUB,RESET   ,KC_ENT  ,                          KC_ESC  ,RESET   ,TO_KIYUB,TO_QWER ,SH_TG   ,XXXXXXX ,KC_PAUS ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     SH_CAPS ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,TD_GUI  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,SH_PAUS ,
+     SH_OS   ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,TD_GUI  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,SH_OS   ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      TO_BASE ,KC_SLCK ,KC_PSCR ,OSM_MEH ,     SYM_L   ,    OSM_SFT ,OSM_CTL ,        KC_BSPC ,KC_SPC  ,    NAV_LxT ,     TG_MOSE ,TD_TOP  ,KC_NLCK ,KC_SYSREQ
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -319,16 +403,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //     ALPHABET BASE LAYERS           ALPHABET BASE LAYERS            ALPHABET BASE LAYERS            ALPHABET BASE LAYERS            ALPHABET BASE LAYERS  
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   
-  //A BEAKL VARIANT ...
-    [_BEAKL] = LAYOUT(
+    [_KIYUBI] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______ ,KC_1    ,KC_2    ,KC_3    ,KC_4    ,KC_5    ,                                            KC_6    ,KC_7    ,KC_8    ,KC_9    ,KC_0    ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_DOT  ,KC_Y    ,KC_O    ,KC_F    ,KC_SCLN ,_______ ,                          _______ ,KC_J    ,KC_C    ,KC_L    ,KC_P    ,KC_COMM ,_______ ,
+     _______ ,CMMxQUO ,KC_Y    ,KC_O    ,KC_F    ,SCLxAT  ,_______ ,                          _______ ,COLxRMK ,KC_C    ,KC_L    ,KC_P    ,DOTxDQO ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______ ,KC_H    ,KC_I    ,KC_E    ,KC_A    ,KC_U    ,_______ ,                          _______ ,KC_D    ,KC_S    ,KC_T    ,KC_N    ,KC_R    ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_Q    ,KC_X    ,KC_QUOT ,KC_K    ,KC_Z    ,_______ ,_______ ,        _______ ,_______ ,KC_W    ,KC_G    ,KC_M    ,KC_B    ,KC_V    ,_______ ,
+     _______ ,KC_Q    ,KC_J    ,KC_X    ,KC_K    ,KC_Z    ,_______ ,_______ ,        _______ ,_______ ,KC_W    ,KC_G    ,KC_M    ,KC_B    ,KC_V    ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -357,11 +440,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_GRV  ,KC_PERC ,KC_DLR  ,KC_HASH ,KC_CIRC ,_______ ,                          _______ ,KC_CIRC ,KC_COLN ,KC_RABK ,KC_LABK ,KC_PMNS ,_______ ,
+     _______ ,KC_GRV  ,KC_PERC ,KC_DLR  ,KC_HASH ,XXXXXXX ,_______ ,                          _______ ,KC_CIRC ,KC_COLN ,KC_RABK ,KC_LABK ,KC_PMNS ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_QUES ,KC_LPRN ,KC_RPRN ,KC_LCBR ,KC_AT   ,_______ ,                          _______ ,KC_TILD ,KC_EQL 	,KC_PAST ,KC_PSLS ,KC_EXLM ,_______ ,
+     _______ ,KC_QUES ,KC_LPRN ,KC_RPRN ,KC_LCBR ,XXXXXXX ,_______ ,                          _______ ,KC_TILD ,KC_EQL 	,KC_PAST ,KC_PSLS ,KC_EXLM ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_BSLS ,KC_LBRC ,KC_RBRC ,KC_RCBR ,KC_BSLS ,_______ ,_______ ,        _______ ,_______ ,KC_UNDS ,KC_UNDS ,KC_AMPR ,KC_PIPE ,KC_PPLS ,_______ ,
+     _______ ,KC_BSLS ,KC_LBRC ,KC_RBRC ,KC_RCBR ,XXXXXXX ,_______ ,_______ ,        _______ ,_______ ,KC_UNDS ,KC_UNDS ,KC_AMPR ,KC_PIPE ,KC_PPLS ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______ 
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -474,7 +557,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // -------------------------------------------------------------------------------------------------------
 
 bool Is_Letter_Layer_KC(uint16_t keycode){
-    return keycode == TO_BEAK ||  keycode == TO_QWER ||  keycode == TO_BASE;
+    return keycode == TO_KIYUB ||  keycode == TO_QWER ||  keycode == TO_BASE;
 }
 
 
@@ -528,6 +611,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
       
 
+  thisShiftState = get_mods() & MOD_MASK_SHIFT ;
+  thisShiftState|= (record->event.pressed && keycode == OSM_SFT) ;
+  thisShiftState&= ! (!record->event.pressed && keycode == OSM_SFT) ;
+  oneShotedShift = ( get_oneshot_mods() & MOD_LSFT );
+  thisShiftState|= oneShotedShift;
+  
+  if(thisShiftState != prevShiftState)
+    SHIFT_CLEAR_MOD()
+  
+  prevShiftState = thisShiftState;
+  
   switch (keycode) {
       
     case QMKBEST:
@@ -539,14 +633,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return true;
 
+
     /*case MOUSE_L:
       if (record->event.pressed)
           OnMouseL_Pressed();
       return true;*/
-      
+    
+    //se clicar ao mesmo tempo consigo enviar um character enrado 
+    case QUOxGRV:
+        SHIFT_MOD(KC_QUOT, KC_GRV,record);
+        return false;
+    case DOTxCOL:
+        SHIFT_MOD(KC_DOT,KC_COLN ,record);
+        return false;
+    case CMMxSCL:
+        SHIFT_MOD(KC_COMM, KC_SCLN,record);
+        return false;
+    case DQOxHIF:
+        SHIFT_MOD(KC_DQUO, KC_PMNS,record);
+        return false;
+    case CMMxQUO:
+        SHIFT_MOD(KC_COMM, KC_QUOT,record);
+    return false;
+    case SCLxAT:
+        SHIFT_MOD(KC_SCLN, KC_AT,record);
+        return false;
+    case DOTxDQO:
+        SHIFT_MOD(KC_DOT, KC_DQUO,record);
+        return false;        
+          
+    case COLxRMK:
+        SHIFT_MOD_MARK(KC_COLN, record);
+            return false;  
+          
+          
     case TO_BASE:
       if (record->event.pressed) set_led_off;
     return true;   
+    
+    
     
   }
   return true;

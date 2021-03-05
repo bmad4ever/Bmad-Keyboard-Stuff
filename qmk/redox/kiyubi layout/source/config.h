@@ -18,14 +18,15 @@
 
 #include "config_common.h"
 
+
 /* USB Device descriptor parameter */
 
-#define VENDOR_ID       0xFEED
-#define PRODUCT_ID      0x6060
+//#define VENDOR_ID       0xFEED
+//#define PRODUCT_ID      0x6060
 #define DEVICE_VER      0x0001
 #define MANUFACTURER    Mattia Dal Ben
 #define PRODUCT         Redox_wireless
-#define DESCRIPTION     q.m.k. keyboard firmware for Redox-w
+//#define DESCRIPTION     q.m.k. keyboard firmware for Redox-w
 
 /* key matrix size */
 #define MATRIX_ROWS 5
@@ -94,6 +95,8 @@
 
 //this is required for the shift mod
 #define ONESHOT_TAP_TOGGLE 2  // Tapping this number of times holds the key until tapped once again.
+
+#undef ONESHOT_TIMEOUT
 #define ONESHOT_TIMEOUT 1000  // Time (in ms) before the one shot key is released
 
 //#define PERMISSIVE_HOLD
