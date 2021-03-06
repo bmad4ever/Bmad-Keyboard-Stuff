@@ -100,7 +100,7 @@
 #define ONESHOT_TIMEOUT 1000  // Time (in ms) before the one shot key is released
 
 //#define PERMISSIVE_HOLD
-#define IGNORE_MOD_TAP_INTERRUPT
+//#define IGNORE_MOD_TAP_INTERRUPT
 
 
 #define ONEHAND_ENABLE // allows swapping left/right keys
