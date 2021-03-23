@@ -115,7 +115,7 @@ RETURN
 
 AutoMode := False
 #if AutoMode
-<^>!CapsLock::            ; Deactivate Auto Mode
+RAlt & CapsLock::            ; Deactivate Auto Mode
   AutoMode := False  
   Menu, Tray, Icon, %icon%
   
@@ -131,7 +131,7 @@ RETURN
 ; https://autohotkey.com/board/topic/132938-auto-capitalize-first-letter-of-sentence/
 
 #if not AutoMode
-<^>!CapsLock::            ; Activate Auto Mode
+RAlt & CapsLock::            ; Activate Auto Mode
  AutoMode := True  
 
 ; set the icon that indicates auto mode is active
