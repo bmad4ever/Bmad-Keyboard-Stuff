@@ -17,7 +17,7 @@ BOOTLOADER = caterina
 #BOOTMAGIC_ENABLE = yes	# Virtual DIP switch configuration(+1000)
 MOUSEKEY_ENABLE = yes	# Mouse keys(+4700)
 EXTRAKEY_ENABLE = yes	# Audio control and System control(+450)
-CONSOLE_ENABLE = yes	# Console for debug(+400)
+#CONSOLE_ENABLE = yes	# Console for debug(+400)
 COMMAND_ENABLE = yes   # Commands for debug and configuration
 CUSTOM_MATRIX = yes    # Remote matrix from the wireless bridge
 # Do not enable SLEEP_LED_ENABLE. it uses the same timer as BACKLIGHT_ENABLE
@@ -31,8 +31,8 @@ CUSTOM_MATRIX = yes    # Remote matrix from the wireless bridge
 #BLUETOOTH_ENABLE = yes # Enable Bluetooth with the Adafruit EZ-Key HID
 TAP_DANCE_ENABLE = yes
 SWAP_HANDS_ENABLE = yes
-
-
+KEY_LOCK_ENABLE = yes
+LTO_ENABLE = yes # link time optimizations
 
 
 USB = /dev/ttyACM0
@@ -40,7 +40,8 @@ USB = /dev/ttyACM0
 OPT_DEFS += -DREDOX_W_PROMICRO
 INTERPHASE_UPLOAD_COMMAND = while [ ! -r $(USB) ]; do sleep 1; done; \
                          avrdude -p $(MCU) -c avr109 -U flash:w:$(TARGET).hex -P $(USB)
-
+    
+                         
 # # project specific files
 SRC = matrix.c
 

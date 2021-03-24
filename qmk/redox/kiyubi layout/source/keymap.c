@@ -28,8 +28,7 @@
 bool prevShiftState = false;
 bool thisShiftState = false;
 bool oneShotedShift = false;
-//uint16_t prevActiveCustomKeyCode = 0;   
-uint16_t kc;
+uint16_t kc; //registered key code set by SHIFT_MOD
 
 void SHIFT_MOD(uint16_t kc1,uint16_t kc2, keyrecord_t *record) 
 { 
@@ -137,7 +136,9 @@ void SHIFT_MOD_MARK(uint16_t kc1, keyrecord_t *record)
 #define _BASE 0
 //used to setup the keyboard' layout
 
-#define _NO_DELAY_BASE_OVERWRITE 10
+#define _NO_DELAY_PLUS_EXTRAS_BASE_OVERLAY 10
+// a layer that removes One Shots and the like from the base layer and adds a KC_LOCK key
+// useful when to spam mod keys without triggering one shots or to lock some key
 
 #define _KIYUBI 1
 //letters layouts only. swaps qwerty layout to beakl. Mind that OS must be using qwerty in order for beakl to work.
@@ -179,17 +180,17 @@ enum custom_keycodes {
   //macro related
   QMKBEST = SAFE_RANGE,
   CMMxDQO,  // comma  or  double quote when shifted 
-  CMMxQUO,  // comma  or  quote when shifted
-  CMMxSCL,  // comma  or  semicolon when shifted
-  COLxRMK,  // colon   or   reference mark when shifted 
+  //CMMxQUO,  // comma  or  quote when shifted
+  //CMMxSCL,  // comma  or  semicolon when shifted
+  //COLxRMK,  // colon   or   reference mark when shifted 
   //COLxHIF,  // colon  or  hifen when shifted
   DOTxAT,  // dot  or  at sign when shifted 
-  DOTxCOL,  // dot  or  colon when shifted
-  DOTxDQO,  // dot  or  double quote when shifted
-  DQOxHIF,  // double quote  or  hifen when shifted
-  QUOxGRV,  // quote  or  grave when shifted
+  //DOTxCOL,  // dot  or  colon when shifted
+  //DOTxDQO,  // dot  or  double quote when shifted
+  //DQOxHIF,  // double quote  or  hifen when shifted
+  //QUOxGRV,  // quote  or  grave when shifted
   QUOxRMK,  // quote   or   reference mark when shifted 
-  SCLxAT,    // semicolon   or   at sign when shifted
+  //SCLxAT,    // semicolon   or   at sign when shifted
   SCLxGRV,  // semicolon  or  grave when shifted 
 // MOUSE_L,
 };
@@ -232,39 +233,21 @@ enum custom_keycodes {
 #define OSM_RLT OSM(MOD_RALT)
 #define CTL_ALT OSM(MOD_LCTL | MOD_LALT)
 #define OSM_MEH OSM(MOD_MEH)
-
-
-//#define MOUSE_L TG(_MOUSE)
-
+#define OSM_GUI OSM(MOD_LGUI)
 
 #define TO_BASE TO(_BASE)
 #define TO_QWER TO(_QWERTY)
 #define TO_KIYUB TO(_KIYUBI)
 
-
-#define TG_NDLAY TG(_NO_DELAY_BASE_OVERWRITE)
+#define TG_NDLAY TG(_NO_DELAY_PLUS_EXTRAS_BASE_OVERLAY)
 
 
 #define TG_MOSE TG(_MOUSE)
 
 
-#define PTSYM_L OSL(_PT_SYMB)
-
-
 #define SH_CAPS SH_T(KC_CAPS)
 #define SH_PAUS SH_T(KC_PAUS)
 
-
-
-/*void OnMouseL_Pressed(void){
-        if((layer_state & LAYER_CODE(_MOUSE)) != 0){
-            layer_off(_MOUSE);
-            layer_off(_ARROW_N_NUMBERS);
-        }else{
-            layer_on(_MOUSE);
-            layer_on(_ARROW_N_NUMBERS);
-        }
-}*/
 
 //-----------------------------------
 //     TAP DANCE 
@@ -275,22 +258,22 @@ enum   {
   CT_TOP
 };
 
-void dance_gui_key (qk_tap_dance_state_t *state, void *user_data) {
-  clear_oneshot_mods();
-  clear_keyboard();
+/*void dance_gui_key (qk_tap_dance_state_t *state, void *user_data) {
+  //clear_oneshot_mods();
+  //clear_keyboard();
   
   switch (state->count) {
     case 1:
     set_oneshot_mods(MOD_LGUI);
     break;
     case 2:
-    tap_code(KC_LGUI);
+    tap_code(KC_LGUI); 
     break;
     default:
     reset_tap_dance (state);
     break;
   }
-}
+}*/
 
 void dance_app_key (qk_tap_dance_state_t *state, void *user_data) {
   clear_oneshot_mods();
@@ -341,9 +324,9 @@ void dance_top_row_layer_key (qk_tap_dance_state_t *state, void *user_data) {
 }
 
 qk_tap_dance_action_t tap_dance_actions[] = {
- [CT_GUI] = ACTION_TAP_DANCE_FN (dance_gui_key)
- ,[CT_APP] = ACTION_TAP_DANCE_FN (dance_app_key)
- ,[CT_TOP] = ACTION_TAP_DANCE_FN (dance_top_row_layer_key)
+// [CT_GUI] = ACTION_TAP_DANCE_FN (dance_gui_key),
+ [CT_APP] = ACTION_TAP_DANCE_FN (dance_app_key),
+ [CT_TOP] = ACTION_TAP_DANCE_FN (dance_top_row_layer_key),
  };
 
 #define TD_GUI TD(CT_GUI)
@@ -379,7 +362,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_CAPS ,XXXXXXX ,SH_TG   ,TO_QWER ,TO_KIYUB,RESET   ,KC_ENT  ,                          KC_ESC  ,RESET   ,TO_KIYUB,TO_QWER ,SH_TG   ,XXXXXXX ,KC_PAUS ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     SH_OS   ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,TD_GUI  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,SH_OS   ,
+     SH_OS   ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,OSM_GUI ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,SH_OS   ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      TO_BASE ,KC_SLCK ,KC_PSCR ,OSM_MEH ,     SYM_L   ,    OSM_SFT ,OSM_CTL ,        KC_BSPC ,KC_SPC  ,    NAV_LxT ,     TG_MOSE ,TD_TOP  ,KC_NLCK ,KC_SYSREQ
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -405,7 +388,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 
-      [_NO_DELAY_BASE_OVERWRITE] = LAYOUT(
+      [_NO_DELAY_PLUS_EXTRAS_BASE_OVERLAY] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
@@ -413,7 +396,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,KC_LALT ,KC_LALT ,        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,KC_LALT ,KC_LALT ,        _______ ,KC_LOCK ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,     SYM_LV  ,    KC_LSFT ,KC_LCTL ,        _______ ,_______ ,    AxN_L   ,     _______ ,_______ ,_______ ,_______
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -461,11 +444,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_DQUO ,KC_PERC ,KC_DLR  ,KC_HASH ,XXXXXXX ,_______ ,                          _______ ,KC_CIRC ,KC_COLN ,KC_RABK ,KC_LABK ,KC_PMNS ,_______ ,
+     _______ ,KC_DQUO ,KC_PERC ,KC_DLR  ,KC_HASH ,XXXXXXX ,_______ ,                          _______ ,KC_CIRC ,KC_COLN ,KC_PAST ,KC_AMPR ,KC_PIPE ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_QUES ,KC_LPRN ,KC_RPRN ,KC_LCBR ,XXXXXXX ,_______ ,                          _______ ,KC_TILD ,KC_EQL 	,KC_PAST ,KC_PSLS ,KC_EXLM ,_______ ,
+     _______ ,KC_QUES ,KC_LBRC ,KC_LPRN ,KC_LCBR ,XXXXXXX ,_______ ,                          _______ ,KC_TILD ,KC_EQL 	,KC_PMNS ,KC_PSLS ,KC_EXLM ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_BSLS ,KC_LBRC ,KC_RBRC ,KC_RCBR ,XXXXXXX ,_______ ,_______ ,        _______ ,_______ ,KC_UNDS ,KC_UNDS ,KC_AMPR ,KC_PIPE ,KC_PPLS ,_______ ,
+     _______ ,KC_BSLS ,KC_RBRC ,KC_RPRN ,KC_RCBR ,XXXXXXX ,_______ ,_______ ,        _______ ,_______ ,KC_UNDS ,KC_UNDS ,KC_RABK ,KC_LABK ,KC_PPLS ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______ 
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -547,7 +530,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______ ,KC_END  ,KCdDUP_ ,KCyREDO ,KCzUNDO ,KCxCUT_ ,_______ ,_______ ,        _______ ,_______ ,KC_0    ,KC_1    ,KC_2    ,KC_3    ,KC_PAST ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
+     _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     KC_0    ,_______ ,_______ ,_______
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
   ),
    
@@ -585,28 +568,6 @@ bool FlashBlueLigthLayer(uint16_t keycode){
 }
 
 
-/*layer_state_t layer_state_set_user(layer_state_t state) {   
-    //note: 
-    // layer_state is basically the previous state when this func is called
-    // layer_state >> state (updated after this func)
-    // IS_LAYER_ON uses layer_state and evaluates previous state
-    
-    if( state & 
-            (
-                LAYER_CODE(_SYMB) 
-                | LAYER_CODE(_ARROW_N_NUMBERS)
-            )   
-       ) red_led_on;
-       else red_led_off;
-
-
-    //check func layers
-    if(state & LAYER_CODE(_MOUSE)) ylw_led_on;   
-    else ylw_led_off;   
-
-  return state;
-}*/
-
 bool swap_pressed = false;
 void matrix_scan_user(void) {  
     set_led_off;
@@ -635,8 +596,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     swap_pressed = record->event.pressed;
     return true;
   }
-  
-  
 
   thisShiftState = get_mods() & MOD_MASK_SHIFT ;
   thisShiftState|= (record->event.pressed && keycode == OSM_SFT) ;
@@ -650,56 +609,41 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   prevShiftState = thisShiftState;
   
   switch (keycode) {
-      
-    case QMKBEST:
-      if (record->event.pressed) {
-        // when keycode QMKBEST is pressed
-        SEND_STRING("QMK is the best thing ever!");
-      } else {
-        // when keycode QMKBEST is released
-      }
-      return true;
-
-
-    /*case MOUSE_L:
-      if (record->event.pressed)
-          OnMouseL_Pressed();
-      return true;*/
      
     case CMMxDQO:
         SHIFT_MOD(KC_COMM, KC_DQUO,record);
         return false;             
-    case CMMxQUO:
-        SHIFT_MOD(KC_COMM, KC_QUOT,record);
-    return false;
-    case CMMxSCL:
-        SHIFT_MOD(KC_COMM, KC_SCLN,record);
-        return false;
+    //case CMMxQUO:
+    //    SHIFT_MOD(KC_COMM, KC_QUOT,record);
+    //return false;
+    //case CMMxSCL:
+    //    SHIFT_MOD(KC_COMM, KC_SCLN,record);
+    //    return false;
     case DOTxAT:
         SHIFT_MOD(KC_DOT, KC_AT,record);
         return false;     
-    case DOTxCOL:
-        SHIFT_MOD(KC_DOT,KC_COLN ,record);
-        return false;
-    case DOTxDQO:
-        SHIFT_MOD(KC_DOT, KC_DQUO,record);
-        return false;        
-    case DQOxHIF:
-        SHIFT_MOD(KC_DQUO, KC_PMNS,record);
-        return false;
-    case SCLxAT:
-        SHIFT_MOD(KC_SCLN, KC_AT,record);
-        return false;
+    //case DOTxCOL:
+    //    SHIFT_MOD(KC_DOT,KC_COLN ,record);
+    //    return false;
+    //case DOTxDQO:
+    //    SHIFT_MOD(KC_DOT, KC_DQUO,record);
+    //    return false;        
+    //case DQOxHIF:
+    //    SHIFT_MOD(KC_DQUO, KC_PMNS,record);
+    //    return false;
+    //case SCLxAT:
+    //    SHIFT_MOD(KC_SCLN, KC_AT,record);
+    //    return false;
     case SCLxGRV:
         SHIFT_MOD(KC_SCLN, KC_GRV,record);
         return false;     
-    case QUOxGRV:
-        SHIFT_MOD(KC_QUOT, KC_GRV,record);
-        return false;
-          
-    case COLxRMK:
-        SHIFT_MOD_MARK(KC_COLN, record);
-            return false;  
+    //case QUOxGRV:
+    //    SHIFT_MOD(KC_QUOT, KC_GRV,record);
+    //    return false;
+    //      
+    //case COLxRMK:
+    //    SHIFT_MOD_MARK(KC_COLN, record);
+    //        return false;  
     case QUOxRMK:
         SHIFT_MOD_MARK(KC_QUOT, record);
             return false;  
