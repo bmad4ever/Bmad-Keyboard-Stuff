@@ -277,6 +277,8 @@ enum   {
 
 void dance_app_key (qk_tap_dance_state_t *state, void *user_data) {
   clear_oneshot_mods();
+  clear_mods();
+  clear_oneshot_locked_mods();
   clear_keyboard();
   
   switch (state->count) {
