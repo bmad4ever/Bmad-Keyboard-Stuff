@@ -33,5 +33,6 @@ Requires the Genetic Algorithm library. Sources:
 [Anaconda](https://anaconda.org/conda-forge/r-ga);
 [Github](https://luca-scr.github.io/GA/articles/GA.html)
 
-The following image is a preview.
+The following image is a preview:
+
 ![preview](images/ga_sample.jpg)
