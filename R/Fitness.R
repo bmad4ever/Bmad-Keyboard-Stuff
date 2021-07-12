@@ -6,15 +6,20 @@
 source("fitness/AuxFunctions.R")
 source("fitness/KeyFrequencyF.R")
 source("fitness/BigramMovementsFrequencyF.R")
+source("fitness/3gramF.R")
 
 # define effort and weight different effort measurements
 efforts <- list()
 
-effort.keys$weight <- 30/100
+
+effort.keys$weight <- 200 /1000
 efforts[[length(efforts)+1]] <- effort.keys
 
-effort.bigrams$weight <- (1-effort.keys$weight)
+effort.bigrams$weight <- 100/1000
 efforts[[length(efforts)+1]] <- effort.bigrams
+
+effort.trigrams$weight <- 800/1000
+efforts[[length(efforts)+1]] <- effort.trigrams
 
 MaxPossibleEffort <- effort.computeMaxPossibleEffort(efforts)
 

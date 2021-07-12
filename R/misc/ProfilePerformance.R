@@ -3,8 +3,9 @@
 # Created by: Bruno
 # Created on: 25/06/2021
 
-source("fitnesses/AuxFunctions.R")
-source("fitnesses/BigramMovementsFrequencyF.R")
+source("fitness/AuxFunctions.R")
+source("fitness/BigramMovementsFrequencyF.R")
+source("fitness/3gramF.R")
 
 library('proto')
 library('magrittr')
@@ -238,6 +239,28 @@ bigram.cost3(sample_layout); bigram.cost4(sample_layout);
 
 # ##############################################
 # ##############################################
+iterations <- 1000
 
-profvis(allf3())
+evalTri1 <- function(layout) for(i in 1:iterations)
+{
+  cost <- 0
+  for (i in 1:n_tri)
+   cost <- cost + evaluateTri(i,layout)
+}
+
+evalTri2 <- function(layout) for(i in 1:iterations)
+{
+  sum(sapply(1:n_tri,evaluateTri,layout))
+}
+
+allf4 <- function() {
+  evalTri1(sample_layout);
+  evalTri2(sample_layout);
+}
+
+# ##############################################
+# ##############################################
+
+
+profvis(allf4())
 
