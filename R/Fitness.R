@@ -27,3 +27,14 @@ fitness <- function(ind)
 {
   return( MaxPossibleEffort - effort.computeTotalEffort(efforts_list = efforts,individual = ind) )
 }
+
+
+fitness_components <- function(ind){
+  fitness <- vector()
+  for (i in seq_along(efforts))
+  {
+      component <- efforts[[i]]
+      fitness[[i]] <- (1 - effort.normalize(component,effort.compute(component,ind))) * efforts[[i]]$weight
+  }
+  return(fitness)
+}
