@@ -44,3 +44,8 @@ effort.trigrams <- c(
     max=sum(trigrams_freq)*max(bigram.pre_computed_costs)*2,
     min=sum(trigrams_freq)*min(bigram.pre_computed_costs)*2
   )
+
+
+# educated guess based on tests. will make the best closer to 1.
+effort.trigrams$max <- effort.trigrams$max - (effort.trigrams$max - effort.trigrams$min)*(1-0.8476)
+effort.trigrams$min <- effort.trigrams$min + (effort.trigrams$max - effort.trigrams$min)*(1-0.8476)

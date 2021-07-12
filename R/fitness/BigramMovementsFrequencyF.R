@@ -180,3 +180,7 @@ effort.bigrams <- c(
     max=max(bigram.pre_computed_costs)*100,
     min=min(bigram.pre_computed_costs)*100
 )
+
+# educated guess based on tests. will make the best closer to 1.
+effort.bigrams$max <- effort.bigrams$max - (effort.bigrams$max - effort.bigrams$min)*(1-0.8183)
+effort.bigrams$min <- effort.bigrams$min + (effort.bigrams$max - effort.bigrams$min)*(1-0.8183)

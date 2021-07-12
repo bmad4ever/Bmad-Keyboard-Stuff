@@ -12,13 +12,13 @@ source("fitness/3gramF.R")
 efforts <- list()
 
 
-effort.keys$weight <- 200 /1000
+effort.keys$weight <- 10/30
 efforts[[length(efforts)+1]] <- effort.keys
 
-effort.bigrams$weight <- 100/1000
+effort.bigrams$weight <- 9/30
 efforts[[length(efforts)+1]] <- effort.bigrams
 
-effort.trigrams$weight <- 800/1000
+effort.trigrams$weight <- 11/30
 efforts[[length(efforts)+1]] <- effort.trigrams
 
 MaxPossibleEffort <- effort.computeMaxPossibleEffort(efforts)
