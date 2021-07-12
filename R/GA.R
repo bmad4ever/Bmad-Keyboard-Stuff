@@ -21,7 +21,7 @@ n <- 30 # number of keys on the layout
 lw <- seq(1,1, length.out=n)
 up <- seq(n,n, length.out=n)
 print(lw[1])
-selection <- function(x) gabin_tourSelection(x, k=2)
+selection <- function(x) gabin_tourSelection(x, k=3)
 crossover <- function(x,p) gaperm_pmxCrossover(x,p)
 mutation <- function(x,p) gaperm_swMutation(x,p)
 result <- ga(type="permutation",

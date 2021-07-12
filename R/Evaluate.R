@@ -51,5 +51,5 @@ par(mar=c(5,6,4,2)) # increase y-axis margin.
 barplot(main="Layouts Fitness",
         height=fitnesses, names=files,
         col="#cccccc", horiz=T , xpd=FALSE, #las=1, xpd=FALSE,mar=c(5,8,4,2),
-        xlim=c(min(fitnesses)-0.02,max(fitnesses))+0.01
+        xlim=c(min(fitnesses)-0.03,max(fitnesses))+0.02
 )

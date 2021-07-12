@@ -15,10 +15,10 @@ efforts <- list()
 effort.keys$weight <- 10/30
 efforts[[length(efforts)+1]] <- effort.keys
 
-effort.bigrams$weight <- 9/30
+effort.bigrams$weight <- 10/30
 efforts[[length(efforts)+1]] <- effort.bigrams
 
-effort.trigrams$weight <- 11/30
+effort.trigrams$weight <- 10/30
 efforts[[length(efforts)+1]] <- effort.trigrams
 
 MaxPossibleEffort <- effort.computeMaxPossibleEffort(efforts)

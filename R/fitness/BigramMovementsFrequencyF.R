@@ -52,8 +52,10 @@ isUpwardMovement <- function(rowDif) rowDif>0
 
 isInnerRoll <- function(key1_pos, key2_pos,leftHand) {
   #Supposes that both use the same hand and does not check for that!
-  return(key1_pos < key2_pos && leftHand
-           || key1_pos > key2_pos && !leftHand)
+  k1x <- key1_pos%%10
+  k2x <- key2_pos%%10
+  return(k1x < k2x && leftHand
+           || k1x > k2x && !leftHand)
 }
 
 # Check for using little and ring finger usage.
@@ -182,5 +184,5 @@ effort.bigrams <- c(
 )
 
 # educated guess based on tests. will make the best closer to 1.
-effort.bigrams$max <- effort.bigrams$max - (effort.bigrams$max - effort.bigrams$min)*(1-0.8183)
-effort.bigrams$min <- effort.bigrams$min + (effort.bigrams$max - effort.bigrams$min)*(1-0.8183)
+effort.bigrams$max <- effort.bigrams$max - (effort.bigrams$max - effort.bigrams$min)*(0.178)
+effort.bigrams$min <- effort.bigrams$min + (effort.bigrams$max - effort.bigrams$min)*(0.178)

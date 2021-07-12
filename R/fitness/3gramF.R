@@ -47,5 +47,5 @@ effort.trigrams <- c(
 
 
 # educated guess based on tests. will make the best closer to 1.
-effort.trigrams$max <- effort.trigrams$max - (effort.trigrams$max - effort.trigrams$min)*(1-0.8476)
-effort.trigrams$min <- effort.trigrams$min + (effort.trigrams$max - effort.trigrams$min)*(1-0.8476)
+effort.trigrams$max <- effort.trigrams$max - (effort.trigrams$max - effort.trigrams$min)*(0.1533)
+effort.trigrams$min <- effort.trigrams$min + (effort.trigrams$max - effort.trigrams$min)*(0.1533)
