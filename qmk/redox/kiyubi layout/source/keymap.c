@@ -136,9 +136,12 @@ void SHIFT_MOD_MARK(uint16_t kc1, keyrecord_t *record)
 #define _BASE 0
 //used to setup the keyboard' layout
 
-#define _NO_DELAY_PLUS_EXTRAS_BASE_OVERLAY 10
-// a layer that removes One Shots and the like from the base layer and adds a KC_LOCK key
-// useful when to spam mod keys without triggering one shots or to lock some key
+#define _NO_DELAY_OVERLAY 10
+// a layer that removes One Shots and the like from the base layer
+// useful to spam mod keys without triggering one shots or to lock some key
+
+#define _GAMING_OVERLAY 11
+// similar to no delay layer but without thumb layers and w/ some key code swaps and with a KC_LOCK key
 
 #define _KIYUBI 1
 //letters layouts only. swaps qwerty layout to beakl. Mind that OS must be using qwerty in order for beakl to work.
@@ -239,7 +242,7 @@ enum custom_keycodes {
 #define TO_QWER TO(_QWERTY)
 #define TO_KIYUB TO(_KIYUBI)
 
-#define TG_NDLAY TG(_NO_DELAY_PLUS_EXTRAS_BASE_OVERLAY)
+#define TG_NDLAY TG(_NO_DELAY_OVERLAY)
 
 
 #define TG_MOSE TG(_MOUSE)
@@ -255,7 +258,8 @@ enum custom_keycodes {
 enum   {
   CT_GUI=0,
   CT_APP,
-  CT_TOP
+  CT_TOP,
+  CT_BLO // base layer overlay
 };
 
 /*void dance_gui_key (qk_tap_dance_state_t *state, void *user_data) {
@@ -280,7 +284,7 @@ void dance_app_key (qk_tap_dance_state_t *state, void *user_data) {
   clear_mods();
   clear_oneshot_locked_mods();
   clear_keyboard();
-  
+
   switch (state->count) {
     case 1:
     tap_code(KC_ESC);
@@ -325,15 +329,47 @@ void dance_top_row_layer_key (qk_tap_dance_state_t *state, void *user_data) {
   }
 }
 
+void dance_base_layer_overlay (qk_tap_dance_state_t *state, void *user_data) {
+  clear_oneshot_mods();
+  clear_mods();
+  clear_oneshot_locked_mods();
+  clear_keyboard();
+  set_led_off;
+  
+  switch (state->count) {
+    case 1:
+    layer_off(_NO_DELAY_OVERLAY);
+    layer_off(_GAMING_OVERLAY);
+    blu_led_on;
+    break;
+    case 2:
+    layer_on(_NO_DELAY_OVERLAY);
+    layer_off(_GAMING_OVERLAY);
+    grn_led_on;
+    break;
+    case 3:
+    layer_off(_NO_DELAY_OVERLAY);
+    layer_on(_GAMING_OVERLAY);
+    ylw_led_on;
+    break;
+    default:
+    reset_tap_dance (state);
+    break;
+  }
+}
+
+
 qk_tap_dance_action_t tap_dance_actions[] = {
 // [CT_GUI] = ACTION_TAP_DANCE_FN (dance_gui_key),
  [CT_APP] = ACTION_TAP_DANCE_FN (dance_app_key),
  [CT_TOP] = ACTION_TAP_DANCE_FN (dance_top_row_layer_key),
+ [CT_BLO] = ACTION_TAP_DANCE_FN (dance_base_layer_overlay),
  };
 
-#define TD_GUI TD(CT_GUI)
+//#define TD_GUI TD(CT_GUI)
 #define TD_APP TD(CT_APP)
 #define TD_TOP TD(CT_TOP)
+#define TD_BLO TD(CT_BLO)
 
 
 #endif
@@ -358,7 +394,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //ADVANCED
     [_BASE] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
-    KC_SYSREQ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,                                            XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,TG_NDLAY,
+    KC_SYSREQ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,                                            XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,TD_BLO  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_INS  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_TAB  ,                          OSM_RLT ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
@@ -390,7 +426,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 
-      [_NO_DELAY_PLUS_EXTRAS_BASE_OVERLAY] = LAYOUT(
+      [_NO_DELAY_OVERLAY] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
@@ -398,13 +434,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,KC_LALT ,KC_LALT ,        _______ ,KC_LOCK ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,KC_LALT ,KC_LALT ,        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,     SYM_LV  ,    KC_LSFT ,KC_LCTL ,        _______ ,_______ ,    AxN_L   ,     _______ ,_______ ,_______ ,_______
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
   ),    
 
-
+      [_GAMING_OVERLAY] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,KC_PPLS ,                          KC_PMNS ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,KC_LALT ,KC_LALT ,        _______ ,KC_LOCK ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,     KC_RALT ,    KC_LSFT ,KC_LCTL ,        _______ ,_______ ,    KC_TAB  ,     _______ ,_______ ,_______ ,_______
+  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
+  ),    
+  
+  
+  
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   //     ALPHABET BASE LAYERS           ALPHABET BASE LAYERS            ALPHABET BASE LAYERS            ALPHABET BASE LAYERS            ALPHABET BASE LAYERS  
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
