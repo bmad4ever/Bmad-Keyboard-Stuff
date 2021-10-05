@@ -73,6 +73,15 @@ void SHIFT_MOD_MARK(uint16_t kc1, keyrecord_t *record)
       }
 }
 
+
+void SWAP_DOMINANT_HAND(keyrecord_t *record){
+    if (record->event.pressed ) { 
+      leftDominantMode=!leftDominantMode;  
+      swap_hands=!swap_hands;
+    }
+}
+
+
 #define SHIFT_CLEAR_MOD() \
 { \
       unregister_code(kc); \
@@ -196,6 +205,7 @@ enum custom_keycodes {
   //SCLxAT,    // semicolon   or   at sign when shifted
   SCLxGRV,  // semicolon  or  grave when shifted 
 // MOUSE_L,
+  SW_HAND,
 };
 
 // Shortcuts to make keymap more readable
@@ -398,7 +408,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_INS  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_TAB  ,                          OSM_RLT ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_CAPS ,XXXXXXX ,SH_TG   ,TO_QWER ,TO_KIYUB,RESET   ,KC_ENT  ,                          KC_ESC  ,RESET   ,TO_KIYUB,TO_QWER ,SH_TG   ,XXXXXXX ,KC_PAUS ,
+     KC_CAPS ,XXXXXXX ,SW_HAND ,TO_QWER ,TO_KIYUB,RESET   ,KC_ENT  ,                          KC_ESC  ,RESET   ,TO_KIYUB,TO_QWER ,SW_HAND ,XXXXXXX ,KC_PAUS ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      SH_OS   ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,OSM_GUI ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,SH_OS   ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
@@ -645,7 +655,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return true;
   }
       
-  if(keycode == SH_OS){
+  if(keycode == SH_OS || keycode == SW_HAND){
     swap_pressed = record->event.pressed;
     return true;
   }
@@ -700,7 +710,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case QUOxRMK:
         SHIFT_MOD_MARK(KC_QUOT, record);
             return false;  
-          
+    
+    case SW_HAND:
+        SWAP_DOMINANT_HAND(record);
+        return false;
           
     case TO_BASE:
       if (record->event.pressed) set_led_off;
