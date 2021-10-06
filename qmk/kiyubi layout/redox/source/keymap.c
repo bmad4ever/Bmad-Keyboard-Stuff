@@ -98,6 +98,8 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 // default set blue => lights yellow
 // added a new code to use the additional blue light.
 
+// leds order: B R Y G
+
 #undef red_led_off
 #undef red_led_on
 #undef grn_led_off
@@ -319,19 +321,19 @@ void dance_top_row_layer_key (qk_tap_dance_state_t *state, void *user_data) {
   switch (state->count) {
     case 1:
     layer_on(_TOP_FUNCS1);
-    blu_led_on;
+    grn_led_on; ylw_led_on;
     break;
     case 2:
     layer_on(_TOP_FUNCS2);
-    grn_led_on;
+    grn_led_on; red_led_on;
     break;
     case 3:
     layer_on(_TOP_MEDIA);
-    ylw_led_on;
+    grn_led_on; blu_led_on;
     break;
     case 4:
     layer_on(_TOP_NUMBERS);
-    red_led_on;
+    grn_led_on; red_led_on; ylw_led_on;
     break;
     default:
     reset_tap_dance (state);
@@ -350,17 +352,17 @@ void dance_base_layer_overlay (qk_tap_dance_state_t *state, void *user_data) {
     case 1:
     layer_off(_NO_DELAY_OVERLAY);
     layer_off(_GAMING_OVERLAY);
-    blu_led_on;
+    grn_led_on; ylw_led_on;
     break;
     case 2:
     layer_on(_NO_DELAY_OVERLAY);
     layer_off(_GAMING_OVERLAY);
-    grn_led_on;
+    grn_led_on; red_led_on;
     break;
     case 3:
     layer_off(_NO_DELAY_OVERLAY);
     layer_on(_GAMING_OVERLAY);
-    ylw_led_on;
+    grn_led_on; blu_led_on;
     break;
     default:
     reset_tap_dance (state);
@@ -585,15 +587,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   
     [_ARROW_N_NUMBERS] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     _______ ,_______ ,GOTO1__ ,KCfFIND ,KChRPLC ,GOTO2__ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+     _______ ,_______ ,GOTO1__ ,KCfFIND ,KChRPLC ,GOTO2__ ,                                            _______ ,KC_P7   ,KC_P8   ,KC_P9   ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,GOTO2__ ,KC_PGUP ,KC_UP   ,KC_PGDN ,KCyREDO ,_______ ,                          _______ ,KC_PMNS ,KC_7    ,KC_8    ,KC_9    ,KC_PEQL ,_______ ,
+     _______ ,GOTO2__ ,KC_PGUP ,KC_UP   ,KC_PGDN ,KCyREDO ,_______ ,                          _______ ,KC_PMNS ,KC_P4   ,KC_P5   ,KC_P6   ,KC_PSLS ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_WBAK ,KC_HOME ,KC_LEFT ,KC_DOWN ,KC_RGHT ,KCzUNDO ,_______ ,                          _______ ,KC_PPLS ,KC_4    ,KC_5    ,KC_6    ,KC_PSLS ,KC_WFWD ,
+     KC_WBAK ,KC_HOME ,KC_LEFT ,KC_DOWN ,KC_RGHT ,KCzUNDO ,_______ ,                          _______ ,KC_PPLS ,KC_P1   ,KC_P2   ,KC_P3   ,KC_PEQL ,KC_WFWD ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_END  ,KCxCUT_ ,KCcCOPY ,KCvPSTE ,KCdDUP_ ,_______ ,_______ ,        _______ ,_______ ,KC_0    ,KC_1    ,KC_2    ,KC_3    ,KC_PAST ,_______ ,
+     _______ ,KC_END  ,KCxCUT_ ,KCcCOPY ,KCvPSTE ,KCdDUP_ ,_______ ,_______ ,        _______ ,_______ ,CMMxDQO ,KC_P0   ,KC_P0   ,KC_PDOT ,KC_PENT ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     KC_0    ,_______ ,_______ ,_______
+     _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
   ),
    
@@ -623,26 +625,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //   METHODS
 // -------------------------------------------------------------------------------------------------------
 
-bool FlashBlueLigthLayer(uint16_t keycode){
-    return keycode == TG_NDLAY ||
+bool FlashBaseLayerChangeLights(uint16_t keycode){
+    return 
         keycode == TO_KIYUB || 
         keycode == TO_QWER || 
         keycode == TO_BASE;
 }
 
-
-bool swap_pressed = false;
+// used to keep leds lit when the state is temporarily active after quick tap
 void matrix_scan_user(void) {  
     set_led_off;
   
-    if( layer_state & 
-          (
-              LAYER_CODE(_SYMB) 
-              | LAYER_CODE(_ARROW_N_NUMBERS)
-          )   
-      ) red_led_on;
+    if( layer_state & (LAYER_CODE(_SYMB)|LAYER_CODE(_ARROW_N_NUMBERS)) ) red_led_on;
 
-    if(swap_pressed) grn_led_on;
+    if(swap_hands != leftDominantMode) grn_led_on;
     
     if(layer_state & LAYER_CODE(_MOUSE)) ylw_led_on;   
 }
@@ -650,16 +646,28 @@ void matrix_scan_user(void) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   
-  if(FlashBlueLigthLayer(keycode)){
-    if (record->event.pressed) blu_led_on;
+  if(FlashBaseLayerChangeLights(keycode)){
+    if (record->event.pressed) {
+        blu_led_on; 
+    }
     return true;
   }
       
-  if(keycode == SH_OS || keycode == SW_HAND){
-    swap_pressed = record->event.pressed;
+  // ensure led lights up on quick tap
+  if(keycode == TG_MOSE ||
+#ifdef ADVANCED_BASE_LAYOUT
+     keycode == SYM_L || keycode == NAV_LxT
+#else
+     keycode == SYM_LV || keycode == AxN_L
+#endif
+  ){
+    if (record->event.pressed) {
+        red_led_on; 
+    }
     return true;
   }
 
+  // check shift state
   thisShiftState = get_mods() & MOD_MASK_SHIFT ;
   thisShiftState|= (record->event.pressed && keycode == OSM_SFT) ;
   thisShiftState&= ! (!record->event.pressed && keycode == OSM_SFT) ;
