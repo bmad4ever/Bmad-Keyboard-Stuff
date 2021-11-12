@@ -21,7 +21,7 @@ MaybeSelectPrevious(){
 
  clipboard := ""     ; empty clipboard
  Send, ^c            ; copy selection if any
- ClipWait, 0.03      ; wait for the clipboard to contain data
+ ClipWait, 0.06      ; wait for the clipboard to contain data
  
  if (ErrorLevel)     ; if clipwait did not find data on the clipboard
  {
@@ -93,6 +93,7 @@ RETURN
 +CapsLock::            ; Sentence case
  ClipSaved := ClipboardAll ;save clipboard
  
+ MaybeSelectPrevious()
  Send, ^x
  StringLower, Clipboard, Clipboard
  Clipboard := RegExReplace(Clipboard, "((?:^|[.?!]\s+)[a-z])", "$u1")

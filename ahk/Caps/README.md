@@ -5,7 +5,7 @@ Adds behaviours related to letters' case.
 
 | `Input` | Function |
 |-|-|
-| `Shift + CapsLock` | On selected text - capitalizes all words that start a sentence with respect to the selection scope|
+| `Shift + CapsLock` | On selected text or from the cursor position to the beginning of the line - capitalizes all words that start a sentence and the first word of the selection/line|
 | `Ctrl + CapsLock` | On selected text or on word behind cursor - Converts all letters to uppercase|
 | `Alt + CapsLock` | On selected text or on word behind cursor - Converts all letters to lowercase|
 | `Shift + Ctrl + CapsLock` | Converts all letters behind the cursor to uppercase (does nothing with text selection, will execute the same as `Ctrl + CapsLock`)|
