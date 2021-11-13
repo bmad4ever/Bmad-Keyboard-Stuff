@@ -1,6 +1,6 @@
 # Toggle-Trigger-Spam (TTS)
 
-The script allows to trigger <b>SPAM MODE</b> using a user defined <b>toggle key</b>, on <b>line 47</b>.
+The script allows to toggle <b>SPAM MODE</b> using a user defined <b>toggle key</b>, on <b>line 47</b>.
 
 ```
 *$Shift::
