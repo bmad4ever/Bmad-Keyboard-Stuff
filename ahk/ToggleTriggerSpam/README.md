@@ -1,4 +1,4 @@
-# Toggle-Trigger-Spam (TTS)
+# Toggle Trigger Spam (TTS)
 
 The script allows to trigger <b>SPAM MODE</b>.
 When in <b>SPAM MODE</b>, if any <b>trigger key</b> is pressed then the key defined as <b>spam key</b> is also sent.
@@ -17,7 +17,7 @@ Example:
 - In the example above, if the game also has a toggle funtionality option but this results in undesired movement or actions when nothing is being pressed. Set the game funtionality to hold and use this script instead.
 
 
-## Toggle-Trigger-Spam (TTS4C)
+## Toggle Trigger Spam for Controllers (TTS4C)
 
 The script provides the same functionality as TTS for controllers.
 
