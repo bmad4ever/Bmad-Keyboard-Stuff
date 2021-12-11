@@ -31,28 +31,21 @@ Loop,  40
 Loop{
     bns1 := []
     bns2 := []
+    
     for index, key in KeySet1 
-        {
             if( GetKeyState(key, "P") )
                 bns1.push(index)
-        }
+                
     for index, key in KeySet2 
-        {
             if( GetKeyState(key, "P") )
                 bns2.push(index)
-        }
+                
     for i1, v1 in bns1
         for i2, v2 in bns2  
-        {
-            ;tt := v1+v2-1
-            ;MsgBox %tt%
             NoteSet[v1+v2-1][2] := true
-            ;tt := NoteSet[v1+v2-1][2] 
-            ;MsgBox %tt%
-        }
+            
     for index, states in NoteSet
     {
-        ;MsgBox %index%
         if states[1] != states[2] 
         {
         
