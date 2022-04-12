@@ -12,6 +12,7 @@
 
 source("Fitness.R")
 
+
 library(GA)
 # Genetic Algorithm library. Sources:
 # https://anaconda.org/conda-forge/r-ga
@@ -20,21 +21,25 @@ library(GA)
 n <- 30 # number of keys on the layout
 lw <- seq(1,1, length.out=n)
 up <- seq(n,n, length.out=n)
-print(lw[1])
-selection <- function(x) gabin_tourSelection(x, k=3)
+
+selection <- function(x) gabin_tourSelection(x, k=2)
 crossover <- function(x,p) gaperm_pmxCrossover(x,p)
 mutation <- function(x,p) gaperm_swMutation(x,p)
 result <- ga(type="permutation",
              fitness=fitness,
              lower=lw, upper=up,
              selection = selection,
-             pcrossover =  0.5 , pmutation  =  .5 ,
+             elitism = 100,
+             pcrossover =  0.3 , pmutation  =  .9 ,
              crossover = crossover,
              mutation = mutation,
              monitor=TRUE,
-             popSize = 400,
-             maxiter = 200)
+             popSize = 10000,
+             maxiter = 240,
+             parallel = parallel::detectCores()
+)
 summary(result)
+par(mfrow=c(1,1))
 plot(result)
 
 

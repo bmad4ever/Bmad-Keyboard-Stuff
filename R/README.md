@@ -10,6 +10,17 @@ New fitness functions can be added and weighted with respect to personal prefere
 
 I do not claim this solution is better than any other solution!
 
+## ComputeFitnessLimits.R
+
+Estimates the lower and upper limits of fitness cost functions.
+
+These computed values are used to normalize the score of each fitness components between 0 and 1.
+The normalized values can then be weighted to prioritize certain fitness components over others without 
+taking into account the magnitude differences of the original cost functions.
+
+Note that the computed limits aren't set or saved after being computed, they are only printed.
+To set them, add or change them at the top of the Fitness.R file after the source imports.
+
 ## Fitness.R
 
 The file defines the final fitness to be used by Evaluate.R and GA.R.

@@ -5,7 +5,7 @@
 
 source("fitness/AuxFunctions.R")
 source("fitness/BigramMovementsFrequencyF.R")
-source("fitness/3gramF.R")
+source("../fitness/top3gramsF.R")
 
 library('proto')
 library('magrittr')

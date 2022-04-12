@@ -6,10 +6,14 @@
 source("Fitness.R")
 
 
+layoutsPath <- "layouts2compare"
+
 # auxiliar data
 characters <- c( letters[1:26] , "." , "," , ";" , "-" )
 fitnesses <- vector()
-files <- list.files(path="layouts", pattern="*.txt", full.names=TRUE, recursive=FALSE)
+effort_scores <- vector()
+penalties <- vector()
+files <- list.files(path=layoutsPath, pattern="*.txt", full.names=TRUE, recursive=FALSE)
 layouts <- rep(list(matrix(NA, c(3, 10))), length(files))
 fitc <- matrix(NA,nrow = length(files), ncol = length(efforts))
 
@@ -27,9 +31,11 @@ for(i in seq_along(files)) {
     fit <- fitness(individual)
 
   layouts[[i]] <- layout
-  fitnesses[length(fitnesses)+1] <- fit
+  fitnesses[length(fitnesses)+1] <- fitness(individual)
+  effort_scores[length(effort_scores)+1] <- effortScore(individual)
+  penalties[length(penalties)+1] <- scorePenalty(individual)
 
-  fitc[i,] <- fitness_components(individual)
+  fitc[i,] <- individual_effort_component_scores(individual)
 }
 print(fitc)
 
@@ -49,21 +55,44 @@ for(i in fitnesses_ordered_indexes){
 
 
 # plot fitness
-par(mfrow=c(1,2))
+par(mfrow=c(2,2))
+
+files <- stringr::str_remove(files,".txt")
+files <- stringr::str_remove(files,layoutsPath)
+files <- stringr::str_remove(files,"/")
+par(las=2) # make label text perpendicular to axis
+par(mar=c(5,7,4,2)) # increase y-axis margin.
+barplot(main="Layouts' Fitness",
+        height=fitnesses, names=files,
+        col= "#bbbbbb", horiz=T , xpd=FALSE,
+        xlim=c(min(fitnesses)-0.03,max(fitnesses)+0.05)
+)
 
 files <- stringr::str_remove(files,".txt")
 files <- stringr::str_remove(files,"layouts/")
 par(las=2) # make label text perpendicular to axis
 par(mar=c(5,7,4,2)) # increase y-axis margin.
-barplot(main="Layouts Fitness",
-        height=fitnesses, names=files,
-        col=c("#bbbbbb"), horiz=T , xpd=FALSE,
-        xlim=c(min(fitnesses)-0.03,max(fitnesses)+0.02)
+barplot(main="Effort Score ",
+        height=effort_scores, names=files,
+        col= "#bbbbbb", horiz=T , xpd=FALSE,
+        xlim=c(min(effort_scores)-0.03,max(effort_scores)+0.05)
+)
+
+files <- stringr::str_remove(files,".txt")
+files <- stringr::str_remove(files,"layouts/")
+par(las=2) # make label text perpendicular to axis
+par(mar=c(5,7,4,2)) # increase y-axis margin.
+barplot(main="Score Penalty",
+        height=penalties, names=files,
+        col= "#bbbbbb", horiz=T , xpd=FALSE,
+        xlim=c(min(penalties)-0.03,max(penalties)+0.02)
 )
 
 par(mar=c(5,4,4,2))
-barplot(t(fitc), main="Fitness Components",
-  col=c("#aaaaaa","#888888","#666666"),
+barplot(t(fitc), main="Individual Effort Component Scores",
+        names=files,
+  col=c("#000000","#000000","#000000"),
   beside=TRUE, horiz=T,
-  #xlim=c(min(fitc)-0.03,max(fitc)+0.02), xpd=FALSE
+  space=c(0,3)
+  ,xlim=c(min(fitc)-0.05,max(fitc)+0.05), xpd=FALSE
 )

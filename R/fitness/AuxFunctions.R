@@ -30,3 +30,6 @@ effort.weight <- function(x, cost) {
 #      altough less efficient, they are easier to read than the following ones.
 effort.computeTotalEffort <- function (efforts_list,individual) sum(unlist(lapply(seq_along(efforts_list), function(x) effort.weight(efforts_list[[x]], effort.normalize(efforts_list[[x]], effort.compute(efforts_list[[x]], individual))) )))
 effort.computeMaxPossibleEffort <- function (efforts_list) sum(unlist(lapply(seq_along(efforts_list), function(x) efforts_list[[x]]$weight )))
+
+penalty.compute <- function(x, ind) (1-as.double(x$constraint(ind)))*x$penalty
+penalty.computeTotalPenalty <- function (constraints_list,individual) sum(unlist(lapply(constraints_list, function (x) penalty.compute(x,individual) )))

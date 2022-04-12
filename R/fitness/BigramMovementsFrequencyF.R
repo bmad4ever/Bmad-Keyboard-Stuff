@@ -33,6 +33,7 @@ bigram.costs.outerRoll <- 3
 # first position equals 0 row difference and last equal 2
 bigram.costs.pinky_with_ring_penalty <- array (c (1,1,3), dim= 3)
 
+bigram.costs.middle_with_index_stretch_penalty <- array (c (2,2,3), dim= 3)
 
 # ###################################################################
 # Auxiliary functions
@@ -47,6 +48,7 @@ isSameFinger <- function(key1_pos, key2_pos) finger_map[key1_pos] == finger_map[
 # Negative sign indicates downward movement
 getKeyPosRow <-function(key_pos) (key_pos-1)%/%10
 getRowDifference <- function(key1_pos, key2_pos) (key1_pos-1)%/%10 - (key2_pos-1)%/%10
+getColDifference <-function(key1_pos, key2_pos) abs( (key1_pos-1)%%10 - (key2_pos-1)%%10 )
 isDownwardMovement <- function(rowDif) rowDif<0
 isUpwardMovement <- function(rowDif) rowDif>0
 
@@ -103,6 +105,16 @@ isPossibleToVerticalSwipe <-  function (key1_pos, key2_pos,rowDifference){
   )
 }
 
+
+bigram.costs.usesIndexMiddleStretch<- function (key1_pos, key2_pos)
+  return(
+    (finger_map[key1_pos]==3 && finger_map[key2_pos]==4)
+    ||(finger_map[key1_pos]==4 && finger_map[key2_pos]==3)
+    ||(finger_map[key1_pos]==5 && finger_map[key2_pos]==6)
+    ||(finger_map[key1_pos]==6 && finger_map[key2_pos]==5)
+    && getColDifference(key1_pos, key2_pos)>1
+  )
+
 # ###################################################################
 # Motion Cost Function
 # ###################################################################
@@ -148,6 +160,9 @@ bigram.bigram_cost <- function(key1_pos, key2_pos){
   if(bigram.costs.usesLittleAndRing(key1_pos,key2_pos))
     cost <- cost + bigram.costs.pinky_with_ring_penalty[abs_rowDiff+1]
 
+    if(bigram.costs.usesIndexMiddleStretch(key1_pos, key2_pos))
+    cost <- cost + bigram.costs.middle_with_index_stretch_penalty[abs_rowDiff+1]
+
   return(cost);
 }
 
@@ -182,7 +197,3 @@ effort.bigrams <- c(
     max=max(bigram.pre_computed_costs)*100,
     min=min(bigram.pre_computed_costs)*100
 )
-
-# educated guess based on tests. will make the best closer to 1.
-effort.bigrams$max <- effort.bigrams$max - (effort.bigrams$max - effort.bigrams$min)*(0.178)
-effort.bigrams$min <- effort.bigrams$min + (effort.bigrams$max - effort.bigrams$min)*(0.178)
