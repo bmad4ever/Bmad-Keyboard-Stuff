@@ -4,7 +4,7 @@
 # Created on: 11/07/2021
 
 
-source("fitness/BigramMovementsFrequencyF.R")
+source("fitness/efforts/2GramEffortMatrix.R")
 
 
 n_five <- 93713%/%16 # the number of top entries to filter and use
@@ -43,8 +43,8 @@ effort.top_fivegrams <- c(
 
 
 testIt <- function(){
-  characters <- c( letters[1:26] , "." , "," , ";" , "-" )
-  layout <- read.table("layouts/qwerty.txt", header=FALSE, sep=" ")
+  characters <- c(letters[1:26] , "..", "," , ";" , "-" )
+  layout <- read.table("../../layouts/qwerty.txt", header=FALSE, sep=" ")
   flat_layout <- as.vector(as.matrix(t(layout)))
   individual <- match(characters,flat_layout)
   print(effort.top_fivegrams$cost(individual))

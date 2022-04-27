@@ -4,14 +4,14 @@
 # Created on: 09/07/2021
 
 source("fitness/AuxFunctions.R")
-source("fitness/KeyFrequencyF.R")
-source("fitness/BigramMovementsFrequencyF.R")
-source("fitness/top2gramsF.R")
-source("fitness/top3gramsF.R")
-source("fitness/top4gramsF.R")
-source("fitness/top5gramsF.R")
-source("fitness/VowelConstraintF.R")
-source("fitness/SymbolConstraintF.R")
+source("fitness/V1/KeyFrequencyF.R")
+#source("fitness/BigramMovementsFrequencyF.R")
+source("fitness/V1/top2gramsF.R")
+source("fitness/V1/top3gramsF.R")
+source("fitness/V1/top4gramsF.R")
+source("fitness/V1/top5gramsF.R")
+source("fitness/constraints/VowelConstraintF.R")
+source("fitness/constraints/SymbolConstraintF.R")
 
 # ----------------------------------------------------------------
 # Effort weight distribution functions
@@ -55,6 +55,7 @@ set_exponential_weights <- function(efforts, power){
 # ----------------------------------------------------------------
 # Set effort heuristics max and minimum values
 # warning: do not change this unless you know what you are doing
+#TODO: these values may no longer be valid for the latest updated bigram costs matrix
 leeway<-0.01
 effort.top_bigrams$min  <-2.03950836913362 * (1 - leeway)
 effort.top_bigrams$max  <-4.03114126178524 * (1 + leeway)
@@ -88,8 +89,8 @@ add_effort(effort.top_fivegrams)
 
 # ----------------------------------------------------------------
 # Set efforts weights
-#set_uniform_weights(efforts)
-set_powers(efforts, 2)
+set_uniform_weights(efforts)
+#set_powers(efforts, 2)
 #set_exponential_weights(efforts, 2)
 
 # ----------------------------------------------------------------

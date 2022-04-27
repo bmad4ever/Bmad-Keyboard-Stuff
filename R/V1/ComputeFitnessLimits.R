@@ -1,4 +1,3 @@
-# Title     : TODO
 # Objective : Estimate maximum possible fitness values for each fitness component
 # Created by: Bruno
 # Created on: 11/04/2022

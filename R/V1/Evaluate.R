@@ -3,17 +3,16 @@
 # Created by: Bruno
 # Created on: 09/07/2021
 
-source("Fitness.R")
-
+if(!exists("Definitions")) source("Definitions.R")
+source("V1/Fitness.R")
 
 layoutsPath <- "layouts2compare"
 
 # auxiliar data
-characters <- c( letters[1:26] , "." , "," , ";" , "-" )
 fitnesses <- vector()
 effort_scores <- vector()
 penalties <- vector()
-files <- list.files(path=layoutsPath, pattern="*.txt", full.names=TRUE, recursive=FALSE)
+files <- list.files(path=layoutsToComparePath, pattern="*.txt", full.names=TRUE, recursive=FALSE)
 layouts <- rep(list(matrix(NA, c(3, 10))), length(files))
 fitc <- matrix(NA,nrow = length(files), ncol = length(efforts))
 
@@ -37,7 +36,7 @@ for(i in seq_along(files)) {
 
   fitc[i,] <- individual_effort_component_scores(individual)
 }
-print(fitc)
+#print(fitc)
 
 # get indexes ordered from least to most fit
 fitnesses_ordered_indexes <- sort(fitnesses, index.return=TRUE)$ix
@@ -51,7 +50,6 @@ for(i in fitnesses_ordered_indexes){
   cat("\n")
   print(layouts[i])
 }
-
 
 
 # plot fitness

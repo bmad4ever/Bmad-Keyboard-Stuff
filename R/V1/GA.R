@@ -10,7 +10,8 @@
 #     with respect to the order presented in the list: 'keys'
 
 
-source("Fitness.R")
+if(!exists("Definitions")) source("Definitions.R")
+source("V1/Fitness.R")
 
 
 library(GA)
@@ -44,7 +45,7 @@ plot(result)
 
 
 # print best layout(s)
-characters <- c( letters[1:26] , "." , "," , ";" , "-" ) # characters to be mapped
+characters <- c(letters[1:26] , ".", "," , ";" , "-" ) # characters to be mapped
 cat('\nbest layout(s):\n')
 for (i in 1:(length(result@solution)/30)){
   print(matrix(characters[match(1:n, result@solution[i,])], nrow = 3, ncol = 10,byrow=TRUE))

@@ -1,6 +1,8 @@
 
-| File                             |  Description                                                                                            |
+| File Folder                      |  Description                                                                                            |
 |----------------------------------|---------------------------------------------------------------------------------------------------------|
 | AuxFunctions.R                   |  Implements auxiliary methods that are used in Fitness.R.                                              |
-| KeyFrequency.R                   |  Measures the effort with respect to key position and frequency of use.                                |
-| BigramMovementsFrequencyF.R      |  Measures the effort with respect to the motion used to type a bigram and its frequency.               |
+| QueriesAndDefinitions.R          |  Auxiliary data and queries for effort estimation.                                                     |
+| ./efforts                        |  Effort matrices and functions that are used to estimate the cost of certain finger/hand motions.      |
+| ./constraints                    |  Constraints to be used in the final fitness function as a means to enforce certain layout properties that may not be related to effort.|
+| ./V1                             |  The first effort estimation implementation. Used for the fitness function.                            |

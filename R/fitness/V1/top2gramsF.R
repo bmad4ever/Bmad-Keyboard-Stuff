@@ -5,7 +5,7 @@
 # Created on: 27/06/2021
 
 
-source("fitness/BigramMovementsFrequencyF.R")
+source("fitness/efforts/2GramEffortMatrix.R")
 
 # note: the difference is negligible when compared to the complete bigram analysis
 n_bi <- 669%/%2  # the number of top entries to filter and use
@@ -40,8 +40,8 @@ effort.top_bigrams <- c(
   )
 
 testIt <- function(){
-  characters <- c( letters[1:26] , "." , "," , ";" , "-" )
-  layout <- read.table("layouts/qwerty.txt", header=FALSE, sep=" ")
+  characters <- c(letters[1:26] , "..", "," , ";" , "-" )
+  layout <- read.table("../../layouts/qwerty.txt", header=FALSE, sep=" ")
   flat_layout <- as.vector(as.matrix(t(layout)))
   individual <- match(characters,flat_layout)
   print(effort.top_bigrams$cost(individual))

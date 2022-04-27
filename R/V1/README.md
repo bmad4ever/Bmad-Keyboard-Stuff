@@ -46,4 +46,4 @@ Requires the Genetic Algorithm library. Sources:
 
 The following image is a preview:
 
-![preview](images/ga_sample.jpg)
+![preview](../images/ga_sample.jpg)
