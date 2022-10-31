@@ -149,7 +149,7 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 
 #define _NO_DELAY_OVERLAY 10
 // a layer that removes One Shots and the like from the base layer
-// useful to spam mod keys without triggering one shots or to lock some key
+// useful to spam mod keys without triggering one shots and have no delays on key presses
 
 #define _GAMING_OVERLAY 11
 // similar to no delay layer but without thumb layers and w/ some key code swaps and with a KC_LOCK key
@@ -271,31 +271,33 @@ enum   {
   CT_GUI=0,
   CT_APP,
   CT_TOP,
-  CT_BLO // base layer overlay
+  CT_BLO, // base layer overlay
 };
 
-/*void dance_gui_key (qk_tap_dance_state_t *state, void *user_data) {
-  //clear_oneshot_mods();
-  //clear_keyboard();
-  
-  switch (state->count) {
-    case 1:
-    set_oneshot_mods(MOD_LGUI);
-    break;
-    case 2:
-    tap_code(KC_LGUI); 
-    break;
-    default:
-    reset_tap_dance (state);
-    break;
-  }
-}*/
 
-void dance_app_key (qk_tap_dance_state_t *state, void *user_data) {
+void soft_reset(void){
   clear_oneshot_mods();
   clear_mods();
   clear_oneshot_locked_mods();
   clear_keyboard();
+  cancel_key_lock();
+}
+
+void go_to_base_reset(void){
+  blu_led_on;
+  
+  soft_reset();
+  
+#ifdef AUTO_SHIFT_DISABLED_AT_STARTUP
+  autoshift_disable();
+#else
+  autoshift_enable();
+#endif
+
+}
+
+void dance_app_key (qk_tap_dance_state_t *state, void *user_data) {
+  soft_reset();
 
   switch (state->count) {
     case 1:
@@ -342,10 +344,7 @@ void dance_top_row_layer_key (qk_tap_dance_state_t *state, void *user_data) {
 }
 
 void dance_base_layer_overlay (qk_tap_dance_state_t *state, void *user_data) {
-  clear_oneshot_mods();
-  clear_mods();
-  clear_oneshot_locked_mods();
-  clear_keyboard();
+  soft_reset();
   set_led_off;
   
   switch (state->count) {
@@ -372,13 +371,11 @@ void dance_base_layer_overlay (qk_tap_dance_state_t *state, void *user_data) {
 
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-// [CT_GUI] = ACTION_TAP_DANCE_FN (dance_gui_key),
  [CT_APP] = ACTION_TAP_DANCE_FN (dance_app_key),
  [CT_TOP] = ACTION_TAP_DANCE_FN (dance_top_row_layer_key),
  [CT_BLO] = ACTION_TAP_DANCE_FN (dance_base_layer_overlay),
  };
 
-//#define TD_GUI TD(CT_GUI)
 #define TD_APP TD(CT_APP)
 #define TD_TOP TD(CT_TOP)
 #define TD_BLO TD(CT_BLO)
@@ -406,13 +403,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //ADVANCED
     [_BASE] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
-    KC_SYSREQ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,                                            XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,TD_BLO  ,
+    KC_SYSREQ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,RESET   ,                                            RESET   ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,TD_BLO  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_INS  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_TAB  ,                          OSM_RLT ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_DEL  ,
+     KC_INS  ,XXXXXXX ,KC_F1   ,KC_F2   ,KC_F10  ,XXXXXXX ,KC_TAB  ,                          OSM_RLT ,XXXXXXX ,KC_F10  ,KC_F2   ,KC_F1   ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_CAPS ,XXXXXXX ,SW_HAND ,TO_QWER ,TO_KIYUB,RESET   ,KC_ENT  ,                          KC_ESC  ,RESET   ,TO_KIYUB,TO_QWER ,SW_HAND ,XXXXXXX ,KC_PAUS ,
+     KC_CAPS ,XXXXXXX ,SW_HAND ,TO_QWER ,TO_KIYUB,XXXXXXX ,KC_ENT  ,                          KC_ESC  ,XXXXXXX ,TO_KIYUB,TO_QWER ,SW_HAND ,XXXXXXX ,KC_PAUS ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     SH_OS   ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,OSM_GUI ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,SH_OS   ,
+     SH_OS   ,XXXXXXX ,XXXXXXX ,KC_ASOFF,KC_ASON ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,OSM_GUI ,XXXXXXX ,KC_ASON ,KC_ASOFF,XXXXXXX ,XXXXXXX ,SH_OS   ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      TO_BASE ,KC_SLCK ,KC_PSCR ,OSM_MEH ,     SYM_L   ,    OSM_SFT ,OSM_CTL ,        KC_BSPC ,KC_SPC  ,    NAV_LxT ,     TG_MOSE ,TD_TOP  ,KC_NLCK ,TO_BASE
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -425,7 +422,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,                                            XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_INS  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_TAB  ,                          KC_RALT ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_DEL  ,
+     KC_INS  ,XXXXXXX ,KC_F1   ,KC_F2   ,KC_F10  ,XXXXXXX ,KC_TAB  ,                          KC_RALT ,XXXXXXX ,KC_F10  ,KC_F2   ,KC_F1   ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_QUES ,XXXXXXX ,SH_TG   ,TO_QWER ,TO_BEAK ,RESET   ,KC_ENT  ,                          KC_ESC  ,RESET   ,TO_BEAK ,TO_QWER ,SH_TG   ,XXXXXXX ,KC_EXLM ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
@@ -625,11 +622,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //   METHODS
 // -------------------------------------------------------------------------------------------------------
 
-bool FlashBaseLayerChangeLights(uint16_t keycode){
+bool is_alpha_layer(uint16_t keycode){
     return 
-        keycode == TO_KIYUB || 
-        keycode == TO_QWER || 
-        keycode == TO_BASE;
+           keycode == TO_KIYUB 
+        || keycode == TO_QWER ;
 }
 
 // used to keep leds lit when the state is temporarily active after quick tap
@@ -646,7 +642,7 @@ void matrix_scan_user(void) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   
-  if(FlashBaseLayerChangeLights(keycode)){
+  if(is_alpha_layer(keycode)){
     if (record->event.pressed) {
         blu_led_on; 
     }
@@ -724,11 +720,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
           
     case TO_BASE:
-      if (record->event.pressed) set_led_off;
+      if (record->event.pressed)
+          go_to_base_reset(); 
     return true;   
-    
-    
-    
   }
   return true;
 };
