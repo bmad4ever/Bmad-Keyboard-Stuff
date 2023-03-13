@@ -14,10 +14,9 @@ Menu, Tray, Icon, %icon%
 ; __________________________________________________________________________
 
 MaybeSelectPrevious(){
- ;auxiliar method that
- ;checks if there is text selected. Then:
- ;if there then this method does nothing, so that the selection is changed
- ;if there is not this method will select a word or text segment depending on whether shift is pressed or not
+ ;auxiliar method that checks whether there is any text selected. Then:
+ ; if there is, then this method does nothing, so that the selection is changed
+ ; if there is not, this method will select a word or text segment depending on whether shift is pressed or not
 
  clipboard := ""     ; empty clipboard
  Send, ^c            ; copy selection if any
@@ -27,7 +26,7 @@ MaybeSelectPrevious(){
  {
    if GetKeyState("Shift")
    {
-     Send, +{Home}    ; select all text behind the cursor on the current line
+     Send, +{Home}   ; select all text behind the cursor on the current line
    }
    else
    {
@@ -105,8 +104,74 @@ RETURN
 RETURN
 
 
+; __________________________________________________________________________
+; Programming conventions conversion
+; __________________________________________________________________________
+
+ProgrammerCommands := False
 
 
+^Insert::                ; Convert snake_case to camelCase (may convert from kebab if using a selection)
+^+Insert::
+ ClipSaved := ClipboardAll ;save clipboard
+
+ MaybeSelectPrevious()
+ Send, ^x
+ ClipLen1 := StrLen(Clipboard)
+ Clipboard := RegExReplace(Clipboard, "([_-])([A-Za-z])", "$u2")
+ ClipLen2 := StrLen(Clipboard)
+ if (ClipLen1 == ClipLen2)  
+ {
+    if ( RegExMatch(Clipboard, "(?:^)[a-z]") )
+    {
+        Clipboard := RegExReplace(Clipboard, "((?:^)[a-z])", "$u1")
+    }
+    else if ( RegExMatch(Clipboard, "(?:^)[A-Z]") )
+    {
+        Clipboard := RegExReplace(Clipboard, "((?:^)[A-Z])", "$l1")
+    }
+ }
+ Send, ^v
+  
+ ;restore clipboard
+ Clipboard := ClipSaved 
+ ClipSaved := ""
+RETURN
+
+
+#if ProgrammerCommands
+!Insert::                ; Convert camelCase to snake_case (may convert from kebab if using a selection)
+!+Insert::
+ ClipSaved := ClipboardAll ;save clipboard
+
+ MaybeSelectPrevious()
+ Send, ^x
+ Clipboard := RegExReplace(Clipboard, "([a-z])([A-Z])", "$1_$l2")
+ Clipboard := RegExReplace(Clipboard, "[\-]([A-Za-z])", "_$l1")
+ StringLower Clipboard, Clipboard
+ Send, ^v
+  
+ ;restore clipboard
+ Clipboard := ClipSaved 
+ ClipSaved := ""
+RETURN
+
+
+#if ProgrammerCommands
+^!Insert::                ; convert camelCase or snake_case to to kebab-case
+^!+Insert::
+ ClipSaved := ClipboardAll ;save clipboard
+ 
+ MaybeSelectPrevious()
+ Send, ^x
+ Clipboard := RegExReplace(Clipboard, "([a-z])([A-Z])", "$1-$l2")
+ Clipboard := RegExReplace(Clipboard, "[_]([A-Za-z])", "-$1")
+ Send, ^v
+ 
+ ;restore clipboard
+ Clipboard := ClipSaved 
+ ClipSaved := ""
+RETURN
 
 
 ; __________________________________________________________________________
@@ -190,8 +255,4 @@ RAlt & CapsLock::            ; Activate Auto Mode
  }
 
 RETURN
-
-
-
-
 

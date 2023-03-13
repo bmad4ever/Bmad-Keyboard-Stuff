@@ -1,9 +1,11 @@
 # Caps
 
-Adds behaviours related to letters' case.
+## Standard commands
+
+Commands to manipulate letters' casing.
 
 
-| `Input` | Function |
+| `Command` | Function |
 |-|-|
 | `Shift + CapsLock` | On selected text or from the cursor position to the beginning of the line - capitalizes all words that start a sentence and the first word of the selection/line|
 | `Ctrl + CapsLock` | On selected text or on word behind cursor - Converts all letters to uppercase|
@@ -22,7 +24,7 @@ Will auto capitalize words and add spaces after punctuation.
 
 You can check whether Auto Mode is active or not by the script's icon.
 
-Auto Mode options can be tweaked around line 140.
+Auto Mode options can be tweaked around line 206.
 
 ```
 ; --- Auto Mode Options ---
@@ -33,6 +35,23 @@ Auto Mode options can be tweaked around line 140.
  D := True        ; add space after colon or semicolon
 ; --- ---  --- ---  --- ---
 ```
+
+
+## Programming Commands
+
+Commands to convert between different programming conventions.
+
+In order to use the commands listed below, ProgrammerCommands, on line 111, should be set to True.
+
+```
+ProgrammerCommands := True
+```
+
+| `Command` | Function |
+|-|-|
+| `Ctrl + Insert` | On selected text or on word behind cursor - converts snake_case into camelCase (can also convert from kebab-case by using text selection). When already using camelCase, converts it into PascalCase and vice versa. |
+| `Alt + Insert` | On selected text or on word behind cursor - converts camelCase into snake_case (can also convert from kebab-case by using text selection) |
+| `Ctrl + Alt + Insert` | On selected text or on word behind cursor - converts any case into kebab-case |
 
 ## Credits
 
