@@ -1,3 +1,35 @@
+; __________________________________________________________________________
+; 	User Config.
+; __________________________________________________________________________
+
+;If you use more than one language or keyboard layout
+; you may want to deactivate language/layout switch shortcuts
+
+ProgrammerCommands := False ;Set to True to allow programmer related commands (see in documentation)
+
+
+; --- Auto Mode Options ---
+global x := True        ; start off script with an assumed capital (true)
+global R := True        ; always capitalize after typing return
+global E := "{Return}"  ; list of end-keys to trigger capitalizing
+global C := True        ; add space after comma
+global D := True        ; add space after colon or semicolon
+
+
+global  ExcludedPrograms := ["devenv"]  
+;"devenv"]
+; List of program names to bypass clipboard check .
+; This will deactivate change selected text or line functionality on listed programs.
+; You will only be able to edit the previous word. 
+;  e.g. in visual studio Ctrl+C copies a line and so
+;  		it is not possible to change a word without
+;       making a selection manually...
+
+; __________________________________________________________________________
+; __________________________________________________________________________
+
+AutoMode := False ; there is no need to change this, just press RAlt & CapsLock to activade/deactivate
+
 ; set script icon
 ;Menu Tray, Icon, imageRes.dll, 117
 
@@ -7,7 +39,14 @@ iconLazyMode := ".\cap2.ico"
 Menu, Tray, Icon, %icon%
 
 
-
+HasVal(haystack, needle) {
+    for index, value in haystack
+        if (value = needle)
+            return index
+    if !(IsObject(haystack))
+        throw Exception("Bad haystack!", -1, haystack)
+    return 0
+}
 ; __________________________________________________________________________
 ; Cap Mods
 ;    Use mod keys with caps to change to lower/upper case certain letters
@@ -17,27 +56,38 @@ MaybeSelectPrevious(){
  ;auxiliar method that checks whether there is any text selected. Then:
  ; if there is, then this method does nothing, so that the selection is changed
  ; if there is not, this method will select a word or text segment depending on whether shift is pressed or not
-
- clipboard := ""     ; empty clipboard
- Send, ^c            ; copy selection if any
- ClipWait, 0.06      ; wait for the clipboard to contain data
  
- if (ErrorLevel)     ; if clipwait did not find data on the clipboard
+ WinGet, OutputVar, ProcessName, A
+ SplitPath, OutputVar,,,, OutNameNoExt
+ ;Msgbox % OutNameNoExt
+ ;Msgbox % HasVal(ExcludedPrograms,OutNameNoExt)
+
+ if (! HasVal(ExcludedPrograms,OutNameNoExt))
  {
-   if GetKeyState("Shift")
-   {
-     Send, +{Home}   ; select all text behind the cursor on the current line
-   }
-   else
-   {
-     Send, ^+{Left}  ; select the word behind the cursor
-   }
+	;MsgBox, a1
+	Clipboard := ""     ; empty clipboard
+	Send, ^c            ; copy selection if any
+	ClipWait, 0.06      ; wait for the clipboard to contain data
+	if (ErrorLevel=0) 
+	{
+		;MsgBox, a2
+		return     ; if found data in the clipboard return
+	}	
+	
+	if GetKeyState("Shift")
+	{
+		;when using VS
+		;this works most of the times, but not always, so to avoid confusion, I disable it.
+		Send, +{Home}   ; select all text behind the cursor on the current line
+		return
+	}
  }
+   ; no clip found and shift was not pressed.
+   ; or the application is in the excluded list and the other functionalities are disabled
+   Send, ^+{Left}  ; select the word behind the cursor
  
  return
 }
-
-
 
 
 ^CapsLock::                ; Convert to UPPER
@@ -108,9 +158,9 @@ RETURN
 ; Programming conventions conversion
 ; __________________________________________________________________________
 
-ProgrammerCommands := False
 
 
+#if ProgrammerCommands
 ^Insert::                ; Convert snake_case to camelCase (may convert from kebab if using a selection)
 ^+Insert::
  ClipSaved := ClipboardAll ;save clipboard
@@ -179,7 +229,6 @@ RETURN
 ;    Auto mode allows to auto inputs spacing and caps.
 ; __________________________________________________________________________
 
-AutoMode := False
 #if AutoMode
 RAlt & CapsLock::            ; Deactivate Auto Mode
   AutoMode := False  
@@ -202,15 +251,6 @@ RAlt & CapsLock::            ; Activate Auto Mode
 
 ; set the icon that indicates auto mode is active
  Menu, Tray, Icon, %iconLazyMode%
- 
-; --- Auto Mode Options ---
- x := True        ; start off script with an assumed capital (true)
- R := True        ; always capitalize after typing return
- E := "{Return}"  ; list of end-keys to trigger capitalizing
- C := True        ; add space after comma
- D := True        ; add space after colon or semicolon
-; --- ---  --- ---  --- ---  
-
  SetKeyDelay, -1  ; avoid lag related mistakes, such as multiple upper cases
  Loop
  {   
@@ -255,4 +295,3 @@ RAlt & CapsLock::            ; Activate Auto Mode
  }
 
 RETURN
-

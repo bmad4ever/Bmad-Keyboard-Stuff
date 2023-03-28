@@ -22,26 +22,18 @@ Commands to manipulate letters' casing.
 
 Will auto capitalize words and add spaces after punctuation.
 
+For the auto-capitalization to occur, you must press a character after the punctuation, and a space will be added automatically. 
+If you add the space manually, the next character won't be capitalized; spaces should be used when dealing with exceptions where an otherwise expected capitalization is not desired.
+
 You can check whether Auto Mode is active or not by the script's icon.
 
-Auto Mode options can be tweaked around line 206.
-
-```
-; --- Auto Mode Options ---
- x := True        ; start off script with an assumed capital (true)
- R := True        ; always capitalize after typing return
- E := "{Return}"  ; list of end-keys to trigger capitalizing
- C := True        ; add space after comma
- D := True        ; add space after colon or semicolon
-; --- ---  --- ---  --- ---
-```
-
+Additional settings may be tweaked at the "User config." section of the script.
 
 ## Programming Commands
 
-Commands to convert between different programming conventions.
+Commands to convert between different programming conventions. 
 
-In order to use the commands listed below, ProgrammerCommands, on line 111, should be set to True.
+In order to use the commands listed below, set ProgrammerCommands to true in the "User config." section of the script.
 
 ```
 ProgrammerCommands := True
@@ -53,6 +45,33 @@ ProgrammerCommands := True
 | `Alt + Insert` | On selected text or on word behind cursor - converts camelCase into snake_case (can also convert from kebab-case by using text selection) |
 | `Ctrl + Alt + Insert` | On selected text or on word behind cursor - converts any case into kebab-case |
 
+__________________ 
+## <p style="text-align: center;"> Potential Problems and How to  Solve Them  </p>                                                     
+__________________ 
+
+### <p style="text-align: center;"> OS Commands </p>
+__________________ 
+
+The above codes may coincide with other OS defined commands. 
+If you have multiple keyboard layouts or languages, it is likely that you have one such command for swapping between them. 
+
+These commands can usually be changed in the keyboard settings. For example, in MS Windows, you can deactivate these in the "Advanced Keyboard Settings" and use the Windows+Space combination to swap between different layouts/languages. 
+
+__________________ 
+### <p style="text-align: center;"> ClipBoard and Programs that use Ctrl+C commands </p> 
+__________________ 
+In order to edit a selection, the command Ctrl+C is issued to check if there is anything selected (your previous clipboard data is restored afterwards).
+
+However, certain programs use the Ctrl+C combo for certain operations. 
+For example, in Visual Studio, Ctrl+C is used to copy the current line when
+nothing is selected. 
+Therefore the Caps AHK script won't be able to work everywhere.
+
+Instead of deactivating the script completely, you can deactivate some functionalities by adding the problematic programs to the ignore list in 
+the "User Config." section of the script. 
+By doing this, when working inside the program, operations over selected text or command variations that use the shift modifier will be deactivated.
+
+_______________________________
 ## Credits
 
 Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
