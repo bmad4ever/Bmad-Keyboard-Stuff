@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 
+
 // -------------------------------------------------------------------------------------------------------    
 //   LAYOUT USAGE TIPS
 // -------------------------------------------------------------------------------------------------------    
@@ -14,7 +15,7 @@
 
 
 // -------------------------------------------------------------------------------------------------------    
-//   redifine colors names     
+//   CUSTOM BEHAVIORS  
 // -------------------------------------------------------------------------------------------------------    
 #if true
 
@@ -152,7 +153,7 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 // useful to spam mod keys without triggering one shots and have no delays on key presses
 
 #define _GAMING_OVERLAY 11
-// similar to no delay layer but without thumb layers and w/ some key code swaps and with a KC_LOCK key
+// similar to no delay layer but without thumb layers and w/ some key code swaps and with a QK_LOCK key
 
 #define _KIYUBI 1
 //letters layouts only. swaps qwerty layout to beakl. Mind that OS must be using qwerty in order for beakl to work.
@@ -288,15 +289,17 @@ void go_to_base_reset(void){
   
   soft_reset();
   
-#ifdef AUTO_SHIFT_DISABLED_AT_STARTUP
-  autoshift_disable();
+#ifdef AUTO_SHIFT_ENABLE
+#ifdef AUTO_SHIFT_DISABLED_AT_STARTUP 
+	autoshift_disable();
 #else
-  autoshift_enable();
+	autoshift_enable();
+#endif
 #endif
 
 }
 
-void dance_app_key (qk_tap_dance_state_t *state, void *user_data) {
+void dance_app_key (tap_dance_state_t *state, void *user_data) {
   soft_reset();
 
   switch (state->count) {
@@ -313,7 +316,7 @@ void dance_app_key (qk_tap_dance_state_t *state, void *user_data) {
 }
 
     
-void dance_top_row_layer_key (qk_tap_dance_state_t *state, void *user_data) {
+void dance_top_row_layer_key (tap_dance_state_t *state, void *user_data) {
   layer_off(_TOP_NUMBERS);
   layer_off(_TOP_MEDIA);
   layer_off(_TOP_FUNCS1);
@@ -343,7 +346,7 @@ void dance_top_row_layer_key (qk_tap_dance_state_t *state, void *user_data) {
   }
 }
 
-void dance_base_layer_overlay (qk_tap_dance_state_t *state, void *user_data) {
+void dance_base_layer_overlay (tap_dance_state_t *state, void *user_data) {
   soft_reset();
   set_led_off;
   
@@ -370,7 +373,7 @@ void dance_base_layer_overlay (qk_tap_dance_state_t *state, void *user_data) {
 }
 
 
-qk_tap_dance_action_t tap_dance_actions[] = {
+tap_dance_action_t tap_dance_actions[] = {
  [CT_APP] = ACTION_TAP_DANCE_FN (dance_app_key),
  [CT_TOP] = ACTION_TAP_DANCE_FN (dance_top_row_layer_key),
  [CT_BLO] = ACTION_TAP_DANCE_FN (dance_base_layer_overlay),
@@ -403,15 +406,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //ADVANCED
     [_BASE] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
-    KC_SYSREQ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,RESET   ,                                            RESET   ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,TD_BLO  ,
+     XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,QK_RBT  ,                                            QK_RBT  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_INS  ,XXXXXXX ,KC_F1   ,KC_F2   ,KC_F10  ,XXXXXXX ,KC_TAB  ,                          OSM_RLT ,XXXXXXX ,KC_F10  ,KC_F2   ,KC_F1   ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_CAPS ,XXXXXXX ,SW_HAND ,TO_QWER ,TO_KIYUB,XXXXXXX ,KC_ENT  ,                          KC_ESC  ,XXXXXXX ,TO_KIYUB,TO_QWER ,SW_HAND ,XXXXXXX ,KC_PAUS ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     SH_OS   ,XXXXXXX ,XXXXXXX ,KC_ASOFF,KC_ASON ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,OSM_GUI ,XXXXXXX ,KC_ASON ,KC_ASOFF,XXXXXXX ,XXXXXXX ,SH_OS   ,
+     SH_OS   ,XXXXXXX ,XXXXXXX ,AS_OFF  ,AS_ON   ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,OSM_GUI ,XXXXXXX ,AS_ON   ,AS_OFF  ,XXXXXXX ,XXXXXXX ,SH_OS   ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
-     TO_BASE ,KC_SLCK ,KC_PSCR ,OSM_MEH ,     SYM_L   ,    OSM_SFT ,OSM_CTL ,        KC_BSPC ,KC_SPC  ,    NAV_LxT ,     TG_MOSE ,TD_TOP  ,KC_NLCK ,TO_BASE
+     TO_BASE ,KC_SCRL ,KC_PSCR ,OSM_MEH ,     SYM_L   ,    OSM_SFT ,OSM_CTL ,        KC_BSPC ,KC_SPC  ,    NAV_LxT ,     TG_MOSE ,TD_TOP  ,KC_NUM  ,TO_BASE
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
   ),
 
@@ -424,11 +427,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_INS  ,XXXXXXX ,KC_F1   ,KC_F2   ,KC_F10  ,XXXXXXX ,KC_TAB  ,                          KC_RALT ,XXXXXXX ,KC_F10  ,KC_F2   ,KC_F1   ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_QUES ,XXXXXXX ,SH_TG   ,TO_QWER ,TO_BEAK ,RESET   ,KC_ENT  ,                          KC_ESC  ,RESET   ,TO_BEAK ,TO_QWER ,SH_TG   ,XXXXXXX ,KC_EXLM ,
+     KC_QUES ,XXXXXXX ,SH_TG   ,TO_QWER ,TO_BEAK ,QK_RBT  ,KC_ENT  ,                          KC_ESC  ,QK_RBT  ,TO_BEAK ,TO_QWER ,SH_TG   ,XXXXXXX ,KC_EXLM ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_CAPS ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_LALT ,KC_LALT ,        KC_APP  ,KC_RGUI ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_PAUS ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
-     TO_BASE ,KC_SLCK ,KC_PSCR ,OSM_MEH ,     SYM_LV  ,    KC_LSFT ,KC_LCTL ,        KC_BSPC ,KC_SPC  ,    AxN_L   ,     TG_MOSE ,TD_TOP  ,KC_NLCK ,TO_BASE
+     TO_BASE ,KC_SCRL ,KC_PSCR ,OSM_MEH ,     SYM_LV  ,    KC_LSFT ,KC_LCTL ,        KC_BSPC ,KC_SPC  ,    AxN_L   ,     TG_MOSE ,TD_TOP  ,KC_NUM  ,TO_BASE
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
   ),
 #endif
@@ -457,7 +460,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,KC_LALT ,KC_LALT ,        _______ ,KC_LOCK ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,KC_LALT ,KC_LALT ,        _______ ,QK_LOCK ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,     KC_RALT ,    KC_LSFT ,KC_LCTL ,        _______ ,_______ ,    KC_TAB  ,     _______ ,_______ ,_______ ,_______
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -621,6 +624,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // -------------------------------------------------------------------------------------------------------    
 //   METHODS
 // -------------------------------------------------------------------------------------------------------
+
+//void keyboard_post_init_user(void) {} // KEEB STARTUP 
+
+
 
 bool is_alpha_layer(uint16_t keycode){
     return 

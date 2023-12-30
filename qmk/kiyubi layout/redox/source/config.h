@@ -8,10 +8,14 @@
 #define ONESHOT_TIMEOUT 1000  // Time (in ms) before the one shot key is released
 
 #undef PERMISSIVE_HOLD
-#define IGNORE_MOD_TAP_INTERRUPT
 
 
 #define ONEHAND_ENABLE // allows swapping left/right keys
+
+
+#define AUTO_SHIFT_DISABLED_AT_STARTUP
+//#define AUTO_SHIFT_TIMEOUT 150
+//#define NO_AUTO_SHIFT_SPECIAL
 
 //======================================================
 // MOUSE options
