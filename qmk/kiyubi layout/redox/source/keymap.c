@@ -116,8 +116,8 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 
 #define red_led_off   PORTD |= (1<<1)
 #define red_led_on    PORTD &= ~(1<<1)
-#define blu_led_off   DDRD  &= ~1
-#define blu_led_on    DDRD  |= 1
+#define blu_led_off   PORTD |= 1
+#define blu_led_on    PORTD &= ~(1)
 #define ylw_led_off   PORTF |= (1<<4)
 #define ylw_led_on    PORTF &= ~(1<<4)
 #define grn_led_off   PORTF |= (1<<5)
