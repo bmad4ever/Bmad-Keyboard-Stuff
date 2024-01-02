@@ -406,7 +406,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //ADVANCED
     [_BASE] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,QK_RBT  ,                                            QK_RBT  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,
+     TD_BLO  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,QK_RBT  ,                                            QK_RBT  ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,TD_BLO  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_INS  ,XXXXXXX ,KC_F1   ,KC_F2   ,KC_F10  ,XXXXXXX ,KC_TAB  ,                          OSM_RLT ,XXXXXXX ,KC_F10  ,KC_F2   ,KC_F1   ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
