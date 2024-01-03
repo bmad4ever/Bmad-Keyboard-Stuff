@@ -1,4 +1,4 @@
-# Mod Keys States
+# <img src="eye-open.ico" alt="icon" width="32" height="32"/> &nbsp; Mod Keys States
 
 ## AlwaysDisplayModStates.ahk
 

@@ -1,6 +1,7 @@
-# Caps
+# <img src="cap.ico" alt="icon" width="32" height="32"/> &nbsp; Caps
 
 ## Standard commands
+
 
 Commands to manipulate letters' casing.
 
@@ -27,13 +28,13 @@ If you add the space manually, the next character won't be capitalized; spaces s
 
 You can check whether Auto Mode is active or not by the script's icon.
 
-Additional settings may be tweaked at the "User config." section of the script.
+Additional settings may be tweaked at the "User Config." section of the script.
 
 ## Programming Commands
 
 Commands to convert between different programming conventions. 
 
-In order to use the commands listed below, set ProgrammerCommands to true in the "User config." section of the script.
+In order to use the commands listed below, set ProgrammerCommands to true in the "User Config." section of the script.
 
 ```
 ProgrammerCommands := True

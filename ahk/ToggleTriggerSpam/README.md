@@ -1,4 +1,4 @@
-# Toggle Trigger Spam (TTS)
+# <img src="spam.ico" alt="icon" width="32" height="32"/> &nbsp; Toggle Trigger Spam (TTS)
 
 The script allows to trigger <b>SPAM MODE</b>.
 When in <b>SPAM MODE</b>, if any <b>trigger key</b> is pressed then the key defined as <b>spam key</b> is also sent.

@@ -1,4 +1,4 @@
-# Colored Joy Mouse
+# <img src="mouseBlue.ico" alt="icon" width="32" height="32"/> &nbsp; Colored Joy Mouse
 
 Use one or multiple controllers as a mouse. 
 
