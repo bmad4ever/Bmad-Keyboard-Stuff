@@ -401,15 +401,14 @@ tap_dance_action_t tap_dance_actions[] = {
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
-		case OSM_SFT:
-		case OSM_CTL:
+        case OSM_SFT:
+        case OSM_CTL:
         case OSM_ALT:
-            return TAPPING_TERM - 100;
+            return TAPPING_TERM/2;
         default:
             return TAPPING_TERM;
     }
 }
-
 
 // -------------------------------------------------------------------------------------------------------    
 //   LAYOUTS
