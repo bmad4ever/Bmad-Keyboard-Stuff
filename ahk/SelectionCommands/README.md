@@ -13,7 +13,7 @@
     - if the line exceeds `max_number_of_chars_in_clipboard` (512 by default), then the operation is canceled and the cursor will be set at the beginning of the line with it selected.
 - **SelectTillClosed**
     - default trigger : <kbd>Pause</kbd> + <kbd>Space</kbd>
-    - behavior is similar to GoToOpen, but will also select the content contained within the parenthesis, brackes, or curly bracket.
+    - behavior is similar to GoToOpen, but will also select the content contained within the parenthesis, brackets, or curly brackets.
 
 
 ### AddSelection Commands 
@@ -42,6 +42,15 @@
     - default trigger : <kbd>Pause</kbd> + <kbd>f</kbd> (when later is released)
     - only implemented for integers.
     - subtracts 1 in the same units as the leftmost digit; except for when it is 1 followed by a 0, in which case subtracts in the following digit units. Examples: 1520 → 520 ; 1020 → 920
+
+
+### Other Commands
+
+- **OpenInFullScreen**
+    - default trigger : <kbd>Pause</kbd> + <kbd>Enter</kbd>
+    - Will maximize the application after oppening. (may fail if active app changes before the target app opens)
+    - If the application is listed in `apps_to_f11`, in the configs, then F11 will be sent it to fullscreen. 
+
 
 
 ## Configs

@@ -11,8 +11,10 @@ delay_between_number_changes := 33
 max_number_of_chars_in_clipboard := 512
 
 
-
-
+; list of apps to use F11 in when using fullscreen open shortcut is used
+; not all apps will work
+apps_to_f11 := "brave|edge|cmd|mintty"
+StringLower, apps_to_f11, apps_to_f11  ; I prefer to just ignore the casing, but may be a problem for some pair of apps
 
 ; -----------------------------------------------------------------------
 
@@ -394,7 +396,7 @@ GoToOpen(){
 	RETURN True
 }
 
-
+;------------------
 SelectTillClosed(){
 	; 1st check if anything is selected
 	; if yes, go to the beggining of the selection
@@ -476,6 +478,26 @@ SelectTillClosed(){
 }
 
 
+;------------------
+OpenInFullScreen(){
+	global apps_to_f11
+
+	hwndtmp:="ahk_id " WinExist("a")
+	SendInput {Enter}
+	WinWaitNotActive, %hwndtmp%, , 5
+	if (errorlevel) {
+		RETURN
+	}
+	SendInput #{Up}
+	WinGet, app_name, ProcessName, A
+	dot_pos := InStr(app_name, ".")
+	app_name := SubStr(app_name, 1, dot_pos-1)
+	StringLower, app_name, app_name  ; I prefer to just ignore the casing, but may be a problem for some pair of apps
+
+	if (app_name ~= apps_to_f11){
+		SendInput {F11}
+	}
+}
  
 ; -----------------------------------------------------------------------
 ;     MAPPINGS		MAPPINGS		MAPPINGS		MAPPINGS
@@ -528,4 +550,9 @@ RETURN
 
 Pause & Space::
 	SelectTillClosed()
+RETURN
+
+
+Pause & Enter::  
+	OpenInFullScreen()
 RETURN
