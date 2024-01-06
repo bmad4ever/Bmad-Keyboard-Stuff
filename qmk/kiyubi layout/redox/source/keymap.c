@@ -248,7 +248,9 @@ enum custom_keycodes {
 #define OSM_ALT OSM(MOD_LALT)
 #define OSM_RLT OSM(MOD_RALT)
 #define CTL_ALT OSM(MOD_LCTL | MOD_LALT)
-#define OSM_MEH OSM(MOD_MEH)
+#define SFT_CTL OSM(MOD_LSFT | MOD_LCTL)
+#define SFT_ALT OSM(MOD_LSFT | MOD_LALT)
+#define OSM_MEH OSM(MOD_MEH)  // Shift + Control + Alt
 #define OSM_GUI OSM(MOD_LGUI)
 
 #define TO_BASE TO(_BASE)
@@ -265,7 +267,7 @@ enum custom_keycodes {
 #define SH_PAUS SH_T(KC_PAUS)
 
 
-//-----------------------------------
+// - - - - - - - - - - - - - - - - - -
 //     TAP DANCE 
 
 enum   {
@@ -299,6 +301,7 @@ void go_to_base_reset(void){
 #endif
 
 }
+
 
 void dance_app_key (tap_dance_state_t *state, void *user_data) {
   soft_reset();
@@ -347,6 +350,7 @@ void dance_top_row_layer_key (tap_dance_state_t *state, void *user_data) {
   }
 }
 
+
 void dance_base_layer_overlay (tap_dance_state_t *state, void *user_data) {
   soft_reset();
   set_led_off;
@@ -374,7 +378,6 @@ void dance_base_layer_overlay (tap_dance_state_t *state, void *user_data) {
 }
 
 
-
 tap_dance_action_t tap_dance_actions[] = {
  [CT_APP] = ACTION_TAP_DANCE_FN (dance_app_key),
  [CT_TOP] = ACTION_TAP_DANCE_FN (dance_top_row_layer_key),
@@ -388,16 +391,37 @@ tap_dance_action_t tap_dance_actions[] = {
 #define TD_ESC TD(TD_ESC_ALTF4)
 
 
+
+// - - - - - - - - - - - - - - - - - -
+//     COMBOS 
+
+enum combo_events {
+OSMSA ,
+OSMSC ,
+OSMCA ,
+OSMSCA
+};
+
+const uint16_t PROGMEM OSMSA_combo[] = {OSM_SFT, OSM_ALT, COMBO_END};
+const uint16_t PROGMEM OSMSC_combo[] = {OSM_SFT, OSM_CTL, COMBO_END};
+const uint16_t PROGMEM OSMCA_combo[] = {OSM_CTL, OSM_ALT, COMBO_END};
+const uint16_t PROGMEM OSMSCA_combo[] = {OSM_SFT, OSM_CTL, OSM_ALT, COMBO_END};
+combo_t key_combos[] = {
+    [OSMSA]  = COMBO(OSMSA_combo   , SFT_ALT)  ,
+    [OSMSC]  = COMBO(OSMSC_combo   , SFT_CTL)  ,
+    [OSMCA]  = COMBO(OSMCA_combo   , CTL_ALT)  ,
+    [OSMSCA] = COMBO(OSMSCA_combo  , OSM_MEH),
+};
+
+
 #endif
-
-
-
-//,UC_M_LN ,UC_M_WI ,UC_M_WC ,UC_M_OS
 
 
 // -------------------------------------------------------------------------------------------------------    
 //   PER KEY TAPPING TERMS
 // -------------------------------------------------------------------------------------------------------   
+
+#ifdef TAPPING_TERM_PER_KEY
 
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -409,6 +433,8 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
             return TAPPING_TERM;
     }
 }
+
+#endif
 
 // -------------------------------------------------------------------------------------------------------    
 //   LAYOUTS

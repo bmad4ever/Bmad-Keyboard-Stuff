@@ -1,8 +1,9 @@
 # Do not enable SLEEP_LED_ENABLE. it uses the same timer as BACKLIGHT_ENABLE
-CUSTOM_MATRIX     = lite # Remote matrix from the wireless bridge
 BOOTMAGIC_ENABLE  = no	# Virtual DIP switch configuration(+1000)
-SLEEP_LED_ENABLE  = no  # Breathing sleep LED during USB suspend
 CONSOLE_ENABLE    = no	# Console for debug(+400)
+CUSTOM_MATRIX     = lite # Remote matrix from the wireless bridge
+SLEEP_LED_ENABLE  = no  # Breathing sleep LED during USB suspend
+
 
 
 MOUSEKEY_ENABLE   = yes	# Mouse keys(+4700)
@@ -16,10 +17,14 @@ MIDI_ENABLE       = no 	# MIDI controls
 UNICODE_ENABLE    = no 	# Unicode
 UNICODEMAP_ENABLE = no
 
-TAP_DANCE_ENABLE  = yes
-SWAP_HANDS_ENABLE = yes
+AUTO_SHIFT_ENABLE = no
+COMBO_ENABLE = yes
 KEY_LOCK_ENABLE   = yes
-AUTO_SHIFT_ENABLE = yes
+PROGRAMMABLE_BUTTON_ENABLE = no
+SWAP_HANDS_ENABLE = yes
+TAP_DANCE_ENABLE  = yes
+TRI_LAYER_ENABLE = no
+
 
 LTO_ENABLE        = yes   # link time optimizations
 

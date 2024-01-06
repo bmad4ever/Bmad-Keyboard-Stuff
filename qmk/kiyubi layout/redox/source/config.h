@@ -3,7 +3,7 @@
 
 //this is required for the shift mod
 #define ONESHOT_TAP_TOGGLE 2  // Tapping this number of times holds the key until tapped once again.
-#define TAPPING_TERM_PER_KEY  
+//#define TAPPING_TERM_PER_KEY  
 
 #undef ONESHOT_TIMEOUT
 #define ONESHOT_TIMEOUT 1000  // Time (in ms) before the one shot key is released
@@ -44,5 +44,19 @@
 #if true
 
 #define TAPPING_TERM 200
+
+#endif
+
+
+//======================================================
+// COMBO options
+//======================================================
+#if true
+
+#define COMBO_TERM 50  // 50ms is the default
+#define COMBO_KEY_BUFFER_LENGTH 8
+#define COMBO_BUFFER_LENGTH 4
+//#define COMBO_MUST_HOLD_MODS
+//#define COMBO_HOLD_TERM 150
 
 #endif
