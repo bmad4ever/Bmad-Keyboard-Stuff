@@ -1,9 +1,43 @@
 ; -----------------------------------------------------------------------
-;     CONFIGS		CONFIGS		CONFIGS		CONFIGS
+;     KEY MAPS			KEY MAPS			KEY MAPS		KEY MAPS
 ; -----------------------------------------------------------------------
 
+; TRIGGER KEY! ; which needs to be pressed for any command to occur
+trigger := "F22" 
+
+
+trigger_p := trigger " & "   ; do not change this line
+OP_ADD_LS := 0				 ; do not change this line
+OP_EXP := 1					 ; do not change this line
+OP_ADD_MS := 2  			 ; do not change this line
+
+KeyMap(trigger " Up", Func("SelectWord")) 
+
+;            ______
+; you may    _____ |
+;   change        ||
+;     these       ||
+;       mappings \  /
+;                 \/
+KeyMap(trigger_p "Tab"       , Func("GoToOpen")) 
+KeyMap(trigger_p "Space"     , Func("SelectTillClosed")) 
+KeyMap(trigger_p "Enter"     , Func("OpenInFullScreen")) 
+KeyMap(trigger_p "Backspace" , Func("ClearLine")) 
+; - - - - - - -|             |- - - - - - - - - - - - - - - - - - - - - 
+KeyMap(trigger_p "o Up"      , Func("AddSelection").Bind(1, OP_EXP)) 
+KeyMap(trigger_p "e Up"      , Func("AddSelection").Bind(-1, OP_EXP)) 
+KeyMap(trigger_p "a Up"      , Func("AddSelection").Bind(1, OP_ADD_LS)) 
+KeyMap(trigger_p "i Up"      , Func("AddSelection").Bind(-1, OP_ADD_LS)) 
+KeyMap(trigger_p "f Up"      , Func("AddSelection").Bind(1, OP_ADD_MS)) 
+KeyMap(trigger_p "y Up"      , Func("AddSelection").Bind(-1, OP_ADD_MS)) 
+
+
+; -----------------------------------------------------------------------
+;     OTHER CONFIGS			OTHER CONFIGS			OTHER CONFIGS
+; -----------------------------------------------------------------------
 ; time in milliseconds
 delay_between_number_changes := 33
+
 
 ; maximum number of chars accepted, if clipboard exceeds it, the operation is canceled
 ; prevents getting stuck due to too much data
@@ -22,9 +56,15 @@ StringLower, apps_to_f11, apps_to_f11  ; I prefer to just ignore the casing, but
 icon := ".\sc.ico" 
 Menu, Tray, Icon, %icon%
 
+
 ; -----------------------------------------------------------------------
-;     FUNCTIONS		FUNCTIONS		FUNCTIONS		FUNCTIONS
+;     FUNCTIONS		FUNCTIONS			FUNCTIONS		FUNCTIONS
 ; -----------------------------------------------------------------------
+
+KeyMap( key, func ){
+	Hotkey %key%, % func
+}
+
 
 ; select the word at the caret position (or mouse position for non editable areas) and return it
 ; considers numbers with decimal places ( only using dot, commas are ignored )
@@ -175,24 +215,22 @@ SelectWord()
 	return w
 }
 
+
 ; increment/decrement selected number ( vim style )
 ; adapted from https://gist.github.com/Lokno/3ee0253549bc1a730aca
-;add_selection_mutex := False  ; not needed for now
-OP_ADD_LS := 0
-OP_EXP := 1
-OP_ADD_MS := 2  ; only working for integers
-OP_PW2 := 3     ; not implemented
-
 AddSelection( sign , op )
 {
 	global OP_ADD_LS, OP_EXP, OP_ADD_MS, OP_PW2
 	global delay_between_number_changes
+	;global trigger
+	
+	;SendInput {%trigger% Up}
 	
 	ClipSaved := ClipboardAll
 	
 	;add_selection_mutex := True
 
-    Send ^c
+    SendInput ^c
 	ClipWait, 0.25
 	if ErrorLevel
 	{
@@ -498,61 +536,3 @@ OpenInFullScreen(){
 		SendInput {F11}
 	}
 }
- 
-; -----------------------------------------------------------------------
-;     MAPPINGS		MAPPINGS		MAPPINGS		MAPPINGS
-; -----------------------------------------------------------------------
- 
-Pause Up::  ; will only run when up anyways, so make it explicit
-	SelectWord()
-RETURN 
-
-
-Pause & o Up::   ; here it actually spams, so Up is used to avoid spamming 
-	AddSelection( 1 , OP_EXP )
-RETURN
-
-
-Pause & e Up::
-	AddSelection( -1 , OP_EXP )
-RETURN
-
-
-Pause & a Up::
-	AddSelection( 1 , OP_ADD_LS )
-RETURN
-
-
-Pause & i Up::
-	AddSelection( -1 , OP_ADD_LS )
-RETURN
-
-
-Pause & f Up::
-	AddSelection( 1 , OP_ADD_MS )
-RETURN
-
-
-Pause & y Up::
-	AddSelection( -1 , OP_ADD_MS )
-RETURN
-
-
-Pause & Backspace::
-	ClearLine()
-RETURN
-
-
-Pause & Tab::
-	GoToOpen()
-RETURN
-
-
-Pause & Space::
-	SelectTillClosed()
-RETURN
-
-
-Pause & Enter::  
-	OpenInFullScreen()
-RETURN
