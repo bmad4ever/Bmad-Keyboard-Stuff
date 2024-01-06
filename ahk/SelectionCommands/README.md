@@ -55,4 +55,4 @@
 - **OpenInFullScreen**
     - default key binding : <kbd>trigger</kbd> + <kbd>Enter</kbd>
     - Will maximize the application after oppening. (may fail if active app changes before the target app opens)
-    - If the application is listed in `apps_to_f11`, in the configs, then F11 will be sent it to fullscreen. 
+    - If the application is listed in `apps_to_f11`, in the configs, then F11 will be sent. 
