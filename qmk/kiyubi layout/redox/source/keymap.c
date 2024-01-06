@@ -165,20 +165,23 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 #define _SYMB 3
 //symbols layer
 
+#define _FUNCTIONS 4
+// all F keys, 1 to 24
+
 // - - - - - - - - - - - -
 // top row overlays
-#define _TOP_NUMBERS 4
-#define _TOP_FUNCS1 5
-#define _TOP_FUNCS2 6
-#define _TOP_MEDIA 7
+#define _TOP_NUMBERS 5
+#define _TOP_FUNCS1 6
+#define _TOP_FUNCS2 7
+#define _TOP_MEDIA 8
 // - - - - - - - - - - - -
 
-#define _ARROW_N_NUMBERS 8
+#define _ARROW_N_NUMBERS 9
 //navigation using arrows, home, end, etc... 
 //also has shortcuts for copy, paste, and similar...
 //also has a numpad on the right half
 
-#define _MOUSE 9
+#define _MOUSE 10
 //navigation using mouse, home, end, etc... 
 //also has shortcuts for copy, paste, and similar...
 
@@ -217,6 +220,7 @@ enum custom_keycodes {
 #define SYM_LV   MO(_SYMB)
 #define SYM_L   OSL(_SYMB)
 #define AxN_L   MO(_ARROW_N_NUMBERS)
+//#define MO_FUNC MO(_FUNCTIONS)
 
 #define KC_ALAS LALT_T(KC_PAST)
 #define KC_CTPL LCTL_T(KC_BSLS)
@@ -242,6 +246,7 @@ enum custom_keycodes {
 
 #define SYM_LxE LT(_SYMB, KC_ENT)
 #define NAV_LxT LT(_ARROW_N_NUMBERS, KC_TAB)
+#define FNC_LxP LT(_FUNCTIONS, KC_PAUS)
 
 #define OSM_SFT OSM(MOD_LSFT)
 #define OSM_CTL OSM(MOD_LCTL)
@@ -265,6 +270,8 @@ enum custom_keycodes {
 
 #define SH_CAPS SH_T(KC_CAPS)
 #define SH_PAUS SH_T(KC_PAUS)
+
+#define CAPxF22 LT(0,KC_CAPS)
 
 
 // - - - - - - - - - - - - - - - - - -
@@ -399,18 +406,21 @@ enum combo_events {
 OSMSA ,
 OSMSC ,
 OSMCA ,
-OSMSCA
+OSMSCA,
+F24C
 };
 
 const uint16_t PROGMEM OSMSA_combo[] = {OSM_SFT, OSM_ALT, COMBO_END};
 const uint16_t PROGMEM OSMSC_combo[] = {OSM_SFT, OSM_CTL, COMBO_END};
 const uint16_t PROGMEM OSMCA_combo[] = {OSM_CTL, OSM_ALT, COMBO_END};
 const uint16_t PROGMEM OSMSCA_combo[] = {OSM_SFT, OSM_CTL, OSM_ALT, COMBO_END};
+const uint16_t PROGMEM F24C_combo[] = {SYM_L, NAV_LxT, COMBO_END};
 combo_t key_combos[] = {
     [OSMSA]  = COMBO(OSMSA_combo   , SFT_ALT)  ,
     [OSMSC]  = COMBO(OSMSC_combo   , SFT_CTL)  ,
     [OSMCA]  = COMBO(OSMCA_combo   , CTL_ALT)  ,
-    [OSMSCA] = COMBO(OSMSCA_combo  , OSM_MEH),
+    [OSMSCA] = COMBO(OSMSCA_combo  , OSM_MEH)  ,
+	[F24C]   = COMBO(F24C_combo    , KC_F24 )  ,
 };
 
 
@@ -456,7 +466,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_INS  ,XXXXXXX ,KC_F1   ,KC_F2   ,KC_F10  ,XXXXXXX ,KC_TAB  ,                          OSM_RLT ,XXXXXXX ,KC_F10  ,KC_F2   ,KC_F1   ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_CAPS ,XXXXXXX ,SW_HAND ,TO_QWER ,TO_KIYUB,XXXXXXX ,KC_ENT  ,                          TD_ESC  ,XXXXXXX ,TO_KIYUB,TO_QWER ,SW_HAND ,XXXXXXX ,KC_PAUS ,
+     CAPxF22 ,XXXXXXX ,SW_HAND ,TO_QWER ,TO_KIYUB,XXXXXXX ,KC_ENT  ,                          TD_ESC  ,XXXXXXX ,TO_KIYUB,TO_QWER ,SW_HAND ,XXXXXXX ,FNC_LxP ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      SH_OS   ,XXXXXXX ,XXXXXXX ,AS_OFF  ,AS_ON   ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,OSM_GUI ,XXXXXXX ,AS_ON   ,AS_OFF  ,XXXXXXX ,XXXXXXX ,SH_OS   ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
@@ -473,7 +483,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_INS  ,XXXXXXX ,KC_F1   ,KC_F2   ,KC_F10  ,XXXXXXX ,KC_TAB  ,                          KC_RALT ,XXXXXXX ,KC_F10  ,KC_F2   ,KC_F1   ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_QUES ,XXXXXXX ,SH_TG   ,TO_QWER ,TO_BEAK ,QK_RBT  ,KC_ENT  ,                          KC_ESC  ,QK_RBT  ,TO_BEAK ,TO_QWER ,SH_TG   ,XXXXXXX ,KC_EXLM ,
+     KC_EXLM ,XXXXXXX ,SH_TG   ,TO_QWER ,TO_BEAK ,QK_RBT  ,KC_ENT  ,                          KC_ESC  ,QK_RBT  ,TO_BEAK ,TO_QWER ,SH_TG   ,XXXXXXX ,KC_QUES ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_CAPS ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_LALT ,KC_LALT ,        KC_APP  ,KC_RGUI ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_PAUS ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
@@ -565,6 +575,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
   ),
 
+  // ------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //    FUNCTIONS LAYER                FUNCTIONS LAYER                FUNCTIONS LAYER                FUNCTIONS LAYER                FUNCTIONS LAYER                
+  // ------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+       [_FUNCTIONS] = LAYOUT(
+  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
+     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,KC_F10  ,KC_F7   ,KC_F4   ,KC_F1   ,_______ ,_______ ,                          _______ ,KC_F13  ,KC_F16  ,KC_F19  ,KC_F22  ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,KC_F11  ,KC_F8   ,KC_F5   ,KC_F2   ,_______ ,_______ ,                          _______ ,KC_F14  ,KC_F17  ,KC_F20  ,KC_F23  ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
+     _______ ,KC_F12  ,KC_F9   ,KC_F6   ,KC_F3   ,_______ ,_______ ,_______ ,        _______ ,_______ ,KC_F15  ,KC_F18  ,KC_F21  ,KC_F24  ,_______ ,_______ ,
+  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
+     _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
+  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
+  ),
  
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   //    TOP ROW OVERLAYS                TOP ROW OVERLAYS            TOP ROW OVERLAYS            TOP ROW OVERLAYS            TOP ROW OVERLAYS
@@ -685,7 +712,13 @@ bool is_alpha_layer(uint16_t keycode){
 void matrix_scan_user(void) {  
     set_led_off;
   
-    if( layer_state & (LAYER_CODE(_SYMB)|LAYER_CODE(_ARROW_N_NUMBERS)) ) red_led_on;
+    if( layer_state & 
+		(
+			LAYER_CODE(_SYMB) |
+			LAYER_CODE(_ARROW_N_NUMBERS) |
+			LAYER_CODE(_FUNCTIONS)
+		) 
+	) red_led_on;
 
     if(swap_hands != leftDominantMode) grn_led_on;
     
@@ -705,7 +738,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // ensure led lights up on quick tap
   if(keycode == TG_MOSE ||
 #ifdef ADVANCED_BASE_LAYOUT
-     keycode == SYM_L || keycode == NAV_LxT
+     keycode == SYM_L || keycode == NAV_LxT || keycode == FNC_LxP
 #else
      keycode == SYM_LV || keycode == AxN_L
 #endif
@@ -755,8 +788,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     //    SHIFT_MOD(KC_SCLN, KC_AT,record);
     //    return false;
     case SCLxGRV:
-        SHIFT_MOD(KC_SCLN, KC_GRV,record);
-        return false;     
+		SHIFT_MOD(KC_SCLN, KC_GRV,record);
+		return false;     
     //case QUOxGRV:
     //    SHIFT_MOD(KC_QUOT, KC_GRV,record);
     //    return false;
@@ -773,9 +806,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
           
     case TO_BASE:
-      if (record->event.pressed)
-          go_to_base_reset(); 
-    return true;   
+		if (record->event.pressed)
+			go_to_base_reset(); 
+		return true;   
+	
+	case CAPxF22: 
+		if (record->tap.count && record->event.pressed) {
+			return true; // normal processing of tap keycode
+		} else if (record->event.pressed) {
+			register_code16(KC_F22); // intercept hold function
+			return false;
+		}
+		//normal processing of key release
+		unregister_code16(KC_F22);
+		return true; 
   }
   return true;
 };
