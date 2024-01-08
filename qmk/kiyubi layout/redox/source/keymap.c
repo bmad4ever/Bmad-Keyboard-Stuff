@@ -1,6 +1,5 @@
 #include QMK_KEYBOARD_H
 
-
 // -------------------------------------------------------------------------------------------------------    
 //   LAYOUT USAGE TIPS
 // -------------------------------------------------------------------------------------------------------    
@@ -10,7 +9,6 @@
     - Use left thumb cluster with key caps that have a 'plane profile' (with small bevel margins) in order to facilitate comboing shift, ctrl and alt
     - Use tilted keys to swipe type to a lower row 
 */  
-
 
 
 
@@ -87,8 +85,18 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 { \
       unregister_code(kc); \
 }
-        //  prevActiveCustomKeyCode = 0; 
-#endif    
+
+
+//-----------------------------------------------------------------
+layer_state_t pseudo_layer_hack = 0;
+// pseudo_layer_hack keeps track of the NAVIGATION & SYMBOL states
+// in order to implement a functionality similar to tri-layer.
+// when both mods are pressed, neither layer is active and 
+// "normal" key is send instead ( F24 as of last implementation ) 
+
+
+#endif 
+
 // -------------------------------------------------------------------------------------------------------    
 //   redifine colors names     
 // -------------------------------------------------------------------------------------------------------    
@@ -139,10 +147,8 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 // -------------------------------------------------------------------------------------------------------   
 #if 1
 
-#define LAYER_CODE(LAYER) (1UL << LAYER)
+#define LAYER_CODE(LAYER) ((layer_state_t)1 << LAYER)
 //use this macro to filter layers on a given state.
-//  this is already defined somewhere else on qmk,
-//  but to make it explicit I redefined it here albeit with a different name
 
 
 #define _BASE 0
@@ -195,22 +201,11 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 
 
 enum custom_keycodes {
-  //macro related
   QMKBEST = SAFE_RANGE,
   CMMxDQO,  // comma  or  double quote when shifted 
-  //CMMxQUO,  // comma  or  quote when shifted
-  //CMMxSCL,  // comma  or  semicolon when shifted
-  //COLxRMK,  // colon   or   reference mark when shifted 
-  //COLxHIF,  // colon  or  hifen when shifted
   DOTxAT,  // dot  or  at sign when shifted 
-  //DOTxCOL,  // dot  or  colon when shifted
-  //DOTxDQO,  // dot  or  double quote when shifted
-  //DQOxHIF,  // double quote  or  hifen when shifted
-  //QUOxGRV,  // quote  or  grave when shifted
   QUOxRMK,  // quote   or   reference mark when shifted 
-  //SCLxAT,    // semicolon   or   at sign when shifted
   SCLxGRV,  // semicolon  or  grave when shifted 
-// MOUSE_L,
   SW_HAND,
 };
 
@@ -406,40 +401,20 @@ enum combo_events {
 OSMSA ,
 OSMSC ,
 OSMCA ,
-OSMSCA,
-F24C
+OSMSCA
 };
 
 const uint16_t PROGMEM OSMSA_combo[] = {OSM_SFT, OSM_ALT, COMBO_END};
 const uint16_t PROGMEM OSMSC_combo[] = {OSM_SFT, OSM_CTL, COMBO_END};
 const uint16_t PROGMEM OSMCA_combo[] = {OSM_CTL, OSM_ALT, COMBO_END};
 const uint16_t PROGMEM OSMSCA_combo[] = {OSM_SFT, OSM_CTL, OSM_ALT, COMBO_END};
-const uint16_t PROGMEM F24C_combo[] = {SYM_L, NAV_LxT, COMBO_END};
+//const uint16_t PROGMEM F24C_combo[] = {SYM_L, NAV_LxT, COMBO_END};
 combo_t key_combos[] = {
     [OSMSA]  = COMBO(OSMSA_combo   , SFT_ALT)  ,
     [OSMSC]  = COMBO(OSMSC_combo   , SFT_CTL)  ,
     [OSMCA]  = COMBO(OSMCA_combo   , CTL_ALT)  ,
     [OSMSCA] = COMBO(OSMSCA_combo  , OSM_MEH)  ,
-	[F24C]   = COMBO(F24C_combo    , KC_F24 )  ,
 };
-
-
-bool process_combo_key_release(uint16_t combo_index, combo_t *combo, uint8_t key_index, uint16_t keycode) {
-	switch (combo_index) {
-        case F24C:
-            switch(keycode) {
-                case SYM_L:
-                    layer_on(_ARROW_N_NUMBERS);
-                    break;
-                case NAV_LxT:
-					set_oneshot_layer(_SYMB, ONESHOT_PRESSED);
-                    break;
-            }
-            return true; // release combo
-    }
-	
-	return false; 
-}
 
 #endif
 
@@ -718,7 +693,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //void keyboard_post_init_user(void) {} // KEEB STARTUP 
 
 
-
 bool is_alpha_layer(uint16_t keycode){
     return 
            keycode == TO_KIYUB 
@@ -763,7 +737,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         red_led_on; 
     }
-    return true;
+    //return true;
   }
 
   // check shift state
@@ -778,42 +752,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   
   prevShiftState = thisShiftState;
   
+  
   switch (keycode) {
      
     case CMMxDQO:
         SHIFT_MOD(KC_COMM, KC_DQUO,record);
         return false;             
-    //case CMMxQUO:
-    //    SHIFT_MOD(KC_COMM, KC_QUOT,record);
-    //return false;
-    //case CMMxSCL:
-    //    SHIFT_MOD(KC_COMM, KC_SCLN,record);
-    //    return false;
+
     case DOTxAT:
         SHIFT_MOD(KC_DOT, KC_AT,record);
         return false;     
-    //case DOTxCOL:
-    //    SHIFT_MOD(KC_DOT,KC_COLN ,record);
-    //    return false;
-    //case DOTxDQO:
-    //    SHIFT_MOD(KC_DOT, KC_DQUO,record);
-    //    return false;        
-    //case DQOxHIF:
-    //    SHIFT_MOD(KC_DQUO, KC_PMNS,record);
-    //    return false;
-    //case SCLxAT:
-    //    SHIFT_MOD(KC_SCLN, KC_AT,record);
-    //    return false;
+
     case SCLxGRV:
 		SHIFT_MOD(KC_SCLN, KC_GRV,record);
 		return false;     
-    //case QUOxGRV:
-    //    SHIFT_MOD(KC_QUOT, KC_GRV,record);
-    //    return false;
-    //      
-    //case COLxRMK:
-    //    SHIFT_MOD_MARK(KC_COLN, record);
-    //        return false;  
+
     case QUOxRMK:
         SHIFT_MOD_MARK(KC_QUOT, record);
             return false;  
@@ -838,11 +791,40 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		unregister_code16(KC_F22);
 		return true; 
 		
-	//case SYM_L:
-	//	if (!record->event.pressed){
-	//		layer_off(_SYMB);
-	//		return false;
-	//	}
+	case SYM_L:
+		if (!record->event.pressed){
+			unregister_code16(KC_F24);
+			pseudo_layer_hack &= ~LAYER_CODE(_SYMB);
+			layer_state |= pseudo_layer_hack;
+		}
+		else
+		{
+			pseudo_layer_hack |= LAYER_CODE(_SYMB);
+			if(layer_state & LAYER_CODE(_ARROW_N_NUMBERS))
+			{
+				register_code16(KC_F24);
+				layer_off(_ARROW_N_NUMBERS); //or this? did I remove combos on last flash?
+				return false;// does this turn off other key?
+			}
+		}
+		return true;
+	case NAV_LxT:
+		if (!record->event.pressed){
+			unregister_code16(KC_F24);
+			pseudo_layer_hack &= ~LAYER_CODE(_ARROW_N_NUMBERS);
+			layer_state |= pseudo_layer_hack;
+		}
+		else
+		{
+			pseudo_layer_hack |= LAYER_CODE(_ARROW_N_NUMBERS);
+			if(layer_state & LAYER_CODE(_SYMB))
+			{
+				register_code16(KC_F24);
+				layer_off(_SYMB);
+				return false;
+			}
+		}
+		return true;
 		
   }
   return true;

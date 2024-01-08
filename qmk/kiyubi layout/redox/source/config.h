@@ -46,9 +46,9 @@
 //======================================================
 #if 1
 
-#define COMBO_PROCESS_KEY_RELEASE   // important to release combo, when 1 key is released
+//#define COMBO_PROCESS_KEY_RELEASE   // important to release combo, when 1 key is released
 #define COMBO_TERM 50  // 50ms is the default
-#define COMBO_KEY_BUFFER_LENGTH 8
+#define COMBO_KEY_BUFFER_LENGTH 4
 #define COMBO_BUFFER_LENGTH 4
 
 #endif
