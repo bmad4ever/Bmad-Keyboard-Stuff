@@ -17,7 +17,7 @@
 // -------------------------------------------------------------------------------------------------------    
 //   CUSTOM BEHAVIORS  
 // -------------------------------------------------------------------------------------------------------    
-#if true
+#if 1
 
 //failed to reproduce exact same behavior as the system. 
 //as close as I could get without jeopardizing the typing experience. 
@@ -92,7 +92,7 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 // -------------------------------------------------------------------------------------------------------    
 //   redifine colors names     
 // -------------------------------------------------------------------------------------------------------    
-#if true
+#if 1
 //notes regarding leds on my keeb
 // default set red => lights green
 // default set green => lights red
@@ -137,7 +137,7 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 // -------------------------------------------------------------------------------------------------------    
 //   LAYERS IDs and descriptions
 // -------------------------------------------------------------------------------------------------------   
-#if true
+#if 1
 
 #define LAYER_CODE(LAYER) (1UL << LAYER)
 //use this macro to filter layers on a given state.
@@ -191,7 +191,7 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
 // -------------------------------------------------------------------------------------------------------    
 //   CUSTOM KEY ALIASES AND CUSTOM KEYCODES
 // -------------------------------------------------------------------------------------------------------   
-#if true
+#if 1
 
 
 enum custom_keycodes {
@@ -423,6 +423,23 @@ combo_t key_combos[] = {
 	[F24C]   = COMBO(F24C_combo    , KC_F24 )  ,
 };
 
+
+bool process_combo_key_release(uint16_t combo_index, combo_t *combo, uint8_t key_index, uint16_t keycode) {
+	switch (combo_index) {
+        case F24C:
+            switch(keycode) {
+                case SYM_L:
+                    layer_on(_ARROW_N_NUMBERS);
+                    break;
+                case NAV_LxT:
+					set_oneshot_layer(_SYMB, ONESHOT_START);
+                    break;
+            }
+            return true; // release combo
+    }
+	
+	return false; 
+}
 
 #endif
 
@@ -820,6 +837,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		//normal processing of key release
 		unregister_code16(KC_F22);
 		return true; 
+		
+	//case SYM_L:
+	//	if (!record->event.pressed){
+	//		layer_off(_SYMB);
+	//		return false;
+	//	}
+		
   }
   return true;
 };
