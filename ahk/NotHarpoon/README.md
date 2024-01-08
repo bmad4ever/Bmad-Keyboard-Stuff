@@ -3,14 +3,14 @@
 ### Allows to bind windows to keys for quick navigation; and provides some utilities for window management.
 
 
-### Configuration : The key bindings can be edited in the KEY MAPS section of script, at the top of the file. 
+### Configuration : The key bindings can be edited in the KEY MAPS section, at the top of the script file. 
 
 
 ## How to use
 
 Open the window you want to bind and hold the <kbd>trigger</kbd> key (default is <kbd>F24</kbd>).
 
-While holding <kbd>F24</kbd> tap on the <kbd>binder</kbd> key (default is <kbd>H</kbd>).
+While holding <kbd>trigger</kbd> tap on the <kbd>binder</kbd> key (default is <kbd>H</kbd>).
 
 Now you can bind the window to any key in the `harpoon_keys` list.
 
@@ -22,11 +22,11 @@ Et voilà, quick window navigation at the tip of your fingers.
 
 With `trigger` held, tap one of the 9 keys in the `layout_keys` to quickly adjust the active window position & dimensions.
 
-For ease of use I recommend that you set the `layout_keys` in a 3x3 key grid. For example, in a qwerty keyboard, it could be: `q w e a s d z x c`.
+For ease of use, I recommend that you set the `layout_keys` in a 3x3 key grid. For example, in a qwerty keyboard, it could be: `q w e a s d z x c`.
 
 
 
-### Additonal commands
+### Additional commands
 
 - **Show Bindings List** : default key binding : <kbd>trigger</kbd> 
 
