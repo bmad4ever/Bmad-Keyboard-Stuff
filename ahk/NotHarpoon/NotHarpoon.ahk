@@ -18,7 +18,7 @@ trigger_p := trigger " & "   ; do not change this line
 
 ; ************************************************************
 ;  ____
-; |  __  keys that set the active window position & dimensions
+; | ___  keys that set the active window position & dimensions
 ; ||	   ordered from left to right, top to down, like so:
 ; ||         ___________
 ; ||  		|_1_|_2_|_3_|    1,3,7,9: dock at the corner
@@ -184,7 +184,13 @@ ShowBindingsList(){
 	
 	msg:= ""
 	for key, app_id in apps{
+		if not WinExist("ahk_id " app_id){
+			apps.Delete(key)
+			continue
+		}
+
 		WinGetTitle title, ahk_id %app_id%
+		
 		StringUpper key, key
 		if StrLen(title)>list_name_max_len
 			title:= "..." SubStr(title, -list_name_max_len)
