@@ -432,7 +432,7 @@ bool process_combo_key_release(uint16_t combo_index, combo_t *combo, uint8_t key
                     layer_on(_ARROW_N_NUMBERS);
                     break;
                 case NAV_LxT:
-					set_oneshot_layer(_SYMB, ONESHOT_START);
+					set_oneshot_layer(_SYMB, ONESHOT_PRESSED);
                     break;
             }
             return true; // release combo
