@@ -154,13 +154,6 @@ layer_state_t pseudo_layer_hack = 0;
 #define _BASE 0
 //used to setup the keyboard' layout
 
-#define _NO_DELAY_OVERLAY 10
-// a layer that removes One Shots and the like from the base layer
-// useful to spam mod keys without triggering one shots and have no delays on key presses
-
-#define _GAMING_OVERLAY 11
-// similar to no delay layer but without thumb layers and w/ some key code swaps and with a QK_LOCK key
-
 #define _KIYUBI 1
 //letters layouts only. swaps qwerty layout to beakl. Mind that OS must be using qwerty in order for beakl to work.
 
@@ -191,6 +184,12 @@ layer_state_t pseudo_layer_hack = 0;
 //navigation using mouse, home, end, etc... 
 //also has shortcuts for copy, paste, and similar...
 
+#define _NO_DELAY_OVERLAY 11
+// a layer that removes One Shots and the like from the base layer
+// useful to spam mod keys without triggering one shots and have no delays on key presses
+
+#define _GAMING_OVERLAY 12
+// similar to no delay layer but without thumb layers and w/ some key code swaps and with a QK_LOCK key
 
 #endif
 
