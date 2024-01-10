@@ -397,22 +397,28 @@ tap_dance_action_t tap_dance_actions[] = {
 //     COMBOS 
 
 enum combo_events {
-OSMSA ,
+OSMSA , // One Shot Modifier ( named after sent key )
 OSMSC ,
 OSMCA ,
-OSMSCA
+OSMSCA,
+RTCC1, // right thumb cluster combo 1 ( named after pressed keys )
+RTCC2,
 };
 
 const uint16_t PROGMEM OSMSA_combo[] = {OSM_SFT, OSM_ALT, COMBO_END};
 const uint16_t PROGMEM OSMSC_combo[] = {OSM_SFT, OSM_CTL, COMBO_END};
 const uint16_t PROGMEM OSMCA_combo[] = {OSM_CTL, OSM_ALT, COMBO_END};
 const uint16_t PROGMEM OSMSCA_combo[] = {OSM_SFT, OSM_CTL, OSM_ALT, COMBO_END};
-//const uint16_t PROGMEM F24C_combo[] = {SYM_L, NAV_LxT, COMBO_END};
+const uint16_t PROGMEM RTCC1_combo[] = {KC_BSPC, TD_APP, COMBO_END};
+const uint16_t PROGMEM RTCC2_combo[] = {KC_BSPC, KC_SPC, COMBO_END};
+//const uint16_t PROGMEM F24C_combo[] = {SYM_L, NAV_LxT, COMBO_END}; // pseudo, not a combo, but similar
 combo_t key_combos[] = {
     [OSMSA]  = COMBO(OSMSA_combo   , SFT_ALT)  ,
     [OSMSC]  = COMBO(OSMSC_combo   , SFT_CTL)  ,
     [OSMCA]  = COMBO(OSMCA_combo   , CTL_ALT)  ,
     [OSMSCA] = COMBO(OSMSCA_combo  , OSM_MEH)  ,
+    [RTCC1]  = COMBO(RTCC1_combo   , LALT(KC_F4)) , // if this works well, consider removing from escape key.
+    [RTCC2]  = COMBO(RTCC2_combo   , OSL(_FUNCTIONS))  ,
 };
 
 #endif
