@@ -805,11 +805,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		else
 		{
 			pseudo_layer_hack |= LAYER_CODE(_SYMB);
-			if(layer_state & LAYER_CODE(_ARROW_N_NUMBERS))
+			if(pseudo_layer_hack & LAYER_CODE(_ARROW_N_NUMBERS))
 			{
 				register_code16(KC_F24);
-				layer_off(_ARROW_N_NUMBERS); //or this? did I remove combos on last flash?
-				return false;// does this turn off other key?
+				layer_off(_ARROW_N_NUMBERS); 
+				return false;
 			}
 		}
 		return true;
@@ -818,13 +818,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 			unregister_code16(KC_F24);
 			pseudo_layer_hack &= ~LAYER_CODE(_ARROW_N_NUMBERS);
 			layer_state |= pseudo_layer_hack;
+			
+			if (layer_state & LAYER_CODE(_SYMB))
+				set_oneshot_layer(_SYMB, ONESHOT_PRESSED);
 		}
 		else
 		{
 			pseudo_layer_hack |= LAYER_CODE(_ARROW_N_NUMBERS);
-			if(layer_state & LAYER_CODE(_SYMB))
-			{
+			if(pseudo_layer_hack & LAYER_CODE(_SYMB))
+			{	
 				register_code16(KC_F24);
+				clear_oneshot_layer_state(_SYMB);
 				layer_off(_SYMB);
 				return false;
 			}
