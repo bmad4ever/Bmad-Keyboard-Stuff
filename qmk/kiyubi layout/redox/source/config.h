@@ -1,5 +1,6 @@
 #pragma once
 
+#define LAYER_STATE_16BIT
 
 #define TAPPING_TERM 200
 
