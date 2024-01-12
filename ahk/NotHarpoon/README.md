@@ -45,3 +45,7 @@ For ease of use, I recommend that you set the [`layout_keys`](https://github.com
 - **Close Non Binded Windows (force)**
     - default key binding : <kbd>trigger</kbd> + <kbd>F22</kbd> 
     - forcefully terminates all the processes of windows that are not binded.  
+
+- **Toggle Suspend**
+    - default key binding : <kbd>trigger</kbd> + <kbd>Pause</kbd>
+    - suspends this ahk script, or reactivates it if previously suspended. 

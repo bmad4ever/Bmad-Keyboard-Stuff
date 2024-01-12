@@ -44,6 +44,7 @@ v c l p , s t n r w g m b j
 ;******************************************
 ; mappings for complementary commands
 KeyMap("~"  trigger                 , Func("ShowBindingsList"))
+KeyMap(     trigger_p "Pause"       , Func("ToggleSuspend"))
 KeyMap(     trigger_p "Delete"      , Func("ClearBindings")) 
 KeyMap(     trigger_p "d"           , Func("ShowAllBindedWindows")) 
 KeyMap(     trigger_p "CapsLock"    , Func("CloseNonBindedWindows").Bind(false))   ; "soft" close, may ask permission
@@ -116,6 +117,25 @@ ObjHasVal(obj, val) {
         if (v == val)
         return true
    return false
+}
+
+
+ToggleSuspend(){
+	global icon
+	
+	Suspend, Toggle
+	ToolTip
+	color := 0x00ff00
+	if a_issuspended
+		color := 0x660000 
+	Gui, New
+	Gui, Add, Picture, w64 h64 x32 y32, %icon%
+	Gui, Color, %color%
+	Gui, -caption -toolwindow -border +AlwaysOnTop +LastFound +E0x08000000 +ToolWindow
+	Gui, Show, w128 h128
+	
+	Sleep 500
+	Gui, Hide
 }
 
 

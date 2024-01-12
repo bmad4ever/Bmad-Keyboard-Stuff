@@ -8,16 +8,16 @@
 
 ## List of Commands 
 
-- **SelectWord**
+- **Select Word**
     - default key binding : <kbd>trigger</kbd> ( on release )
     - selects the word under the cursor.
     - can also select a number with a single decimal point, if the dicimal point is defined with a dot, i.e., won't work with commas. 
-- **GoToOpen**
+- **Go To Open**
     - default key binding : <kbd>trigger</kbd> + <kbd>Tab</kbd>
     - moves cursor to the first open parenthesis, bracket, or curly bracket - `( [ {` - on the current line.
     - if any of the above symbols is behind the cursor, then it moves to the next one on the line; or back to the first again if there are none to the right.
     - if the line exceeds `max_number_of_chars_in_clipboard` (512 by default), then the operation is canceled and the cursor will be set at the beginning of the line with it selected.
-- **SelectTillClosed**
+- **Select Till Closed**
     - default key binding : <kbd>trigger</kbd> + <kbd>Space</kbd>
     - behavior is similar to GoToOpen, but will also select the content contained within the parenthesis, brackets, or curly brackets.
 
@@ -52,7 +52,15 @@
 
 ### Other Commands
 
-- **OpenInFullScreen**
+- **Open In FullScreen**
     - default key binding : <kbd>trigger</kbd> + <kbd>Enter</kbd>
     - Will maximize the application after oppening. (may fail if active app changes before the target app opens)
     - If the application is listed in `apps_to_f11`, in the configs, then F11 will be sent. 
+
+- **Clear Line**
+    - default key binding : <kbd>trigger</kbd> + <kbd>Backspace</kbd>
+    - deletes a entire line.
+
+- **Toggle Suspend**
+    - default key binding : <kbd>trigger</kbd> + <kbd>Pause</kbd>
+    - suspends this ahk script, or reactivates it if previously suspended. 

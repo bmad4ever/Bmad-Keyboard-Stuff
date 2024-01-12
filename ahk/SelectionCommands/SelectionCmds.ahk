@@ -19,6 +19,7 @@ KeyMap(trigger " Up", Func("SelectWord"))
 ;     these       ||
 ;       mappings \  /
 ;                 \/
+KeyMap(trigger_p "Pause"     , Func("ToggleSuspend")) 
 KeyMap(trigger_p "Tab"       , Func("GoToOpen")) 
 KeyMap(trigger_p "Space"     , Func("SelectTillClosed")) 
 KeyMap(trigger_p "Enter"     , Func("OpenInFullScreen")) 
@@ -66,6 +67,24 @@ trigger:=trigger_p:=""
 
 KeyMap( key, func ){
 	Hotkey %key%, % func
+}
+
+
+ToggleSuspend(){
+	global icon
+	
+	Suspend, Toggle
+	color := 0x00ff00
+	if a_issuspended
+		color := 0x660000 
+	Gui, New
+	Gui, Add, Picture, w64 h64 x32 y32, %icon%
+	Gui, Color, %color%
+	Gui, -caption -toolwindow -border +AlwaysOnTop +LastFound +E0x08000000 +ToolWindow
+	Gui, Show, w128 h128
+	
+	Sleep 500
+	Gui, Hide
 }
 
 
