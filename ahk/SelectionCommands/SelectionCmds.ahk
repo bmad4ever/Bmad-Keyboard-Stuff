@@ -13,24 +13,24 @@ OP_ADD_MS := 2  			 ; do not change this line
 
 KeyMap(trigger " Up", Func("SelectWord")) 
 
-;            ______
-; you may    _____ |
-;   change        ||
-;     these       ||
-;       mappings \  /
-;                 \/
-KeyMap(trigger_p "Pause"     , Func("ToggleSuspend")) 
-KeyMap(trigger_p "Tab"       , Func("GoToOpen")) 
-KeyMap(trigger_p "Space"     , Func("SelectTillClosed")) 
-KeyMap(trigger_p "Enter"     , Func("OpenInFullScreen")) 
-KeyMap(trigger_p "Backspace" , Func("ClearLine")) 
-; - - - - - - -|             |- - - - - - - - - - - - - - - - - - - - - 
-KeyMap(trigger_p "o Up"      , Func("AddSelection").Bind(1, OP_EXP)) 
-KeyMap(trigger_p "e Up"      , Func("AddSelection").Bind(-1, OP_EXP)) 
-KeyMap(trigger_p "a Up"      , Func("AddSelection").Bind(1, OP_ADD_LS)) 
-KeyMap(trigger_p "i Up"      , Func("AddSelection").Bind(-1, OP_ADD_LS)) 
-KeyMap(trigger_p "f Up"      , Func("AddSelection").Bind(1, OP_ADD_MS)) 
-KeyMap(trigger_p "y Up"      , Func("AddSelection").Bind(-1, OP_ADD_MS)) 
+
+;   you may    _______
+;     change    _____ |    
+;       these        ||
+;         mappings  \  /
+;                    \/
+KeyMap("~" trigger_p "Pause"     , Func("ToggleSuspend")) 
+KeyMap(    trigger_p "Tab"       , Func("GoToOpen")) 
+KeyMap(    trigger_p "Space"     , Func("SelectTillClosed")) 
+KeyMap(    trigger_p "Enter"     , Func("OpenInFullScreen")) 
+KeyMap(    trigger_p "Backspace" , Func("ClearLine")) 
+; - - - - - - - - -|             |- - - - - - - - - - - - - - - - - - - - - 
+KeyMap(    trigger_p "o Up"      , Func("AddSelection").Bind(1, OP_EXP)) 
+KeyMap(    trigger_p "e Up"      , Func("AddSelection").Bind(-1, OP_EXP)) 
+KeyMap(    trigger_p "a Up"      , Func("AddSelection").Bind(1, OP_ADD_LS)) 
+KeyMap(    trigger_p "i Up"      , Func("AddSelection").Bind(-1, OP_ADD_LS)) 
+KeyMap(    trigger_p "f Up"      , Func("AddSelection").Bind(1, OP_ADD_MS)) 
+KeyMap(    trigger_p "y Up"      , Func("AddSelection").Bind(-1, OP_ADD_MS)) 
 
 
 ; -----------------------------------------------------------------------

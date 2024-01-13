@@ -44,7 +44,7 @@ v c l p , s t n r w g m b j
 ;******************************************
 ; mappings for complementary commands
 KeyMap("~"  trigger                 , Func("ShowBindingsList"))
-KeyMap(     trigger_p "Pause"       , Func("ToggleSuspend"))
+KeyMap("~"  trigger_p "Pause"       , Func("ToggleSuspend"))
 KeyMap(     trigger_p "Delete"      , Func("ClearBindings")) 
 KeyMap(     trigger_p "d"           , Func("ShowAllBindedWindows")) 
 KeyMap(     trigger_p "CapsLock"    , Func("CloseNonBindedWindows").Bind(false))   ; "soft" close, may ask permission
