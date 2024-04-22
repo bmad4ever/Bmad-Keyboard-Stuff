@@ -169,12 +169,10 @@ enum custom_keycodes {
 #define KCfFIND LCTL(KC_F)
 #define KChRPLC LCTL(KC_H)
 
-//#define CTL_ALT LCTL(KC_LALT)
 #define ALT_ENT LALT(KC_ENT)
 
 #define SYM_LxE LT(_SYMB, KC_ENT)
 #define NAV_LxT LT(_ARROW_N_NUMBERS, KC_TAB)
-#define FNC_LxP LT(_FUNCTIONS, KC_PAUS)
 
 #define OSM_SFT OSM(MOD_LSFT)
 #define OSM_CTL OSM(MOD_LCTL)
@@ -412,7 +410,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_INS  ,XXXXXXX ,KC_F1   ,KC_F2   ,KC_F10  ,XXXXXXX ,KC_TAB  ,                          OSM_RLT ,XXXXXXX ,KC_F10  ,KC_F2   ,KC_F1   ,XXXXXXX ,KC_DEL  ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     CAPxF22 ,XXXXXXX ,SW_HAND ,TO_QWER ,TO_KIYUB,XXXXXXX ,KC_ENT  ,                          TD_ESC  ,XXXXXXX ,TO_KIYUB,TO_QWER ,SW_HAND ,XXXXXXX ,FNC_LxP ,
+     CAPxF22 ,XXXXXXX ,SW_HAND ,TO_QWER ,TO_KIYUB,XXXXXXX ,KC_ENT  ,                          TD_ESC  ,XXXXXXX ,TO_KIYUB,TO_QWER ,SW_HAND ,XXXXXXX ,KC_PAUS ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      SH_OS   ,XXXXXXX ,XXXXXXX ,AS_OFF  ,AS_ON   ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,OSM_GUI ,XXXXXXX ,AS_ON   ,AS_OFF  ,XXXXXXX ,XXXXXXX ,SH_OS   ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
@@ -683,7 +681,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   // ensure led lights up on quick tap
   if(keycode == TG_MOSE ||
 #ifdef ADVANCED_BASE_LAYOUT
-     keycode == SYM_L || keycode == NAV_LxT || keycode == FNC_LxP
+     keycode == SYM_L || keycode == NAV_LxT 
 #else
      keycode == SYM_LV || keycode == AxN_L
 #endif
