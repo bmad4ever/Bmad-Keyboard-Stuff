@@ -123,26 +123,24 @@ layer_state_t pseudo_layer_hack = 0;
 
 // - - - - - - - - - - - -
 // top row overlays
-#define _TOP_NUMBERS 5
-#define _TOP_FUNCS1 6
-#define _TOP_FUNCS2 7
-#define _TOP_MEDIA 8
+//#define _TOP_NUMBERS 5   // already in kiyubi & qwerty layers
+#define _TOP_MEDIA 5
 // - - - - - - - - - - - -
 
-#define _MOUSE 9
+#define _MOUSE 6
 //navigation using mouse, home, end, etc... 
 //also has shortcuts for copy, paste, and similar...
 
-#define _ARROW_N_NUMBERS 10
+#define _ARROW_N_NUMBERS 7
 //navigation using arrows, home, end, etc... 
 //also has shortcuts for copy, paste, and similar...
 //also has a numpad on the right half
 
-#define _NO_DELAY_OVERLAY 11
+#define _NO_DELAY_OVERLAY 8
 // a layer that removes One Shots and the like from the base layer
 // useful to spam mod keys without triggering one shots and have no delays on key presses
 
-#define _GAMING_OVERLAY 12
+#define _GAMING_OVERLAY 9
 // similar to no delay layer but without thumb layers and w/ some key code swaps and with a QK_LOCK key
 
 #endif
@@ -167,6 +165,7 @@ enum custom_keycodes {
 #define SYM_LV   MO(_SYMB)
 #define SYM_L   OSL(_SYMB)
 #define AxN_L   MO(_ARROW_N_NUMBERS)
+#define MED_L   TG(_TOP_MEDIA)
 //#define MO_FUNC MO(_FUNCTIONS)
 
 #define KC_ALAS LALT_T(KC_PAST)
@@ -226,12 +225,25 @@ const key_override_t dot_at_override = ko_make_with_layers(MOD_MASK_SHIFT, KC_DO
 const key_override_t comma_quotes_override = ko_make_with_layers(MOD_MASK_SHIFT, KC_COMM, KC_DQUO, 1<<_KIYUBI);
 const key_override_t semic_grave_override = ko_make_with_layers(MOD_MASK_SHIFT, KC_SCLN, KC_GRV, 1<<_KIYUBI);
 //const key_override_t apos_quotes = ko_make_basic(MOD_MASK_SHIFT, KC_QUOT, );
+const key_override_t volume_up_dn_override = ko_make_basic(MOD_MASK_SHIFT, KC_VOLU, KC_VOLD);
+const key_override_t brightness_up_dn_override = ko_make_basic(MOD_MASK_SHIFT, KC_BRIU, KC_BRID);
+const key_override_t media_nxt_prv_override = ko_make_basic(MOD_MASK_SHIFT, KC_MNXT, KC_MPRV);
+//const key_override_t pc_sleep_wake_override = ko_make_basic(MOD_MASK_SHIFT, KC_SLEP, KC_WAKE);
+const key_override_t mute_stop_override = ko_make_basic(MOD_MASK_SHIFT, KC_MUTE, KC_MSTP);
+
 
 // This globally defines all key overrides to be used
 const key_override_t **key_overrides = (const key_override_t *[]){
     &dot_at_override,
     &comma_quotes_override,
-    NULL // Null terminate the array of overrides!
+	
+	&volume_up_dn_override,
+	&brightness_up_dn_override,
+	&media_nxt_prv_override,
+	//&pc_sleep_wake_override,
+	&mute_stop_override,
+    
+	NULL // Null terminate the array of overrides!
 };
 
 // - - - - - - - - - - - - - - - - - -
@@ -240,7 +252,7 @@ const key_override_t **key_overrides = (const key_override_t *[]){
 enum   {
   CT_GUI=0,
   CT_APP,
-  CT_TOP, // top row overlay
+  //CT_TOP, // top row overlay
   CT_BLO, // "base" layer overlay
   TD_ESC_ALTF4, // escape -> Alt + F4
 };
@@ -286,37 +298,6 @@ void dance_app_key (tap_dance_state_t *state, void *user_data) {
   }
 }
 
-    
-void dance_top_row_layer_key (tap_dance_state_t *state, void *user_data) {
-  layer_off(_TOP_NUMBERS);
-  layer_off(_TOP_MEDIA);
-  layer_off(_TOP_FUNCS1);
-  layer_off(_TOP_FUNCS2);
-  set_led_off;
-  
-  switch (state->count) {
-    case 1:
-    layer_on(_TOP_FUNCS1);
-    grn_led_on; ylw_led_on;
-    break;
-    case 2:
-    layer_on(_TOP_FUNCS2);
-    grn_led_on; red_led_on;
-    break;
-    case 3:
-    layer_on(_TOP_MEDIA);
-    grn_led_on; blu_led_on;
-    break;
-    case 4:
-    layer_on(_TOP_NUMBERS);
-    grn_led_on; red_led_on; ylw_led_on;
-    break;
-    default:
-    reset_tap_dance (state);
-    break;
-  }
-}
-
 
 void dance_base_layer_overlay (tap_dance_state_t *state, void *user_data) {
   soft_reset();
@@ -347,13 +328,12 @@ void dance_base_layer_overlay (tap_dance_state_t *state, void *user_data) {
 
 tap_dance_action_t tap_dance_actions[] = {
  [CT_APP] = ACTION_TAP_DANCE_FN (dance_app_key),
- [CT_TOP] = ACTION_TAP_DANCE_FN (dance_top_row_layer_key),
  [CT_BLO] = ACTION_TAP_DANCE_FN (dance_base_layer_overlay),
  [TD_ESC_ALTF4] = ACTION_TAP_DANCE_DOUBLE(KC_ESC, LALT(KC_F4)),
  };
 
 #define TD_APP TD(CT_APP)
-#define TD_TOP TD(CT_TOP)
+//#define TD_TOP TD(CT_TOP)   // no longer used; to be removed
 #define TD_BLO TD(CT_BLO)
 #define TD_ESC TD(TD_ESC_ALTF4)
 
@@ -433,7 +413,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      SH_OS   ,XXXXXXX ,XXXXXXX ,AS_OFF  ,AS_ON   ,XXXXXXX ,OSM_ALT ,OSM_ALT ,        TD_APP  ,OSM_GUI ,XXXXXXX ,AS_ON   ,AS_OFF  ,XXXXXXX ,XXXXXXX ,SH_OS   ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
-     TO_BASE ,KC_SCRL ,KC_PSCR ,OSM_MEH ,     SYM_L   ,    OSM_SFT ,OSM_CTL ,        KC_BSPC ,KC_SPC  ,    NAV_LxT ,     TG_MOSE ,TD_TOP  ,KC_NUM  ,TO_BASE
+     TO_BASE ,KC_SCRL ,KC_PSCR ,OSM_MEH ,     SYM_L   ,    OSM_SFT ,OSM_CTL ,        KC_BSPC ,KC_SPC  ,    NAV_LxT ,     TG_MOSE ,MED_L   ,KC_NUM  ,TO_BASE
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
   ),
 
@@ -450,7 +430,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_CAPS ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_LALT ,KC_LALT ,        KC_APP  ,KC_RGUI ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,XXXXXXX ,KC_PAUS ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
-     TO_BASE ,KC_SCRL ,KC_PSCR ,OSM_MEH ,     SYM_LV  ,    KC_LSFT ,KC_LCTL ,        KC_BSPC ,KC_SPC  ,    AxN_L   ,     TG_MOSE ,TD_TOP  ,KC_NUM  ,TO_BASE
+     TO_BASE ,KC_SCRL ,KC_PSCR ,OSM_MEH ,     SYM_LV  ,    KC_LSFT ,KC_LCTL ,        KC_BSPC ,KC_SPC  ,    AxN_L   ,     TG_MOSE ,MED_L   ,KC_NUM  ,TO_BASE
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
   ),
 #endif
@@ -548,7 +528,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______ ,KC_F10  ,KC_F7   ,KC_F4   ,KC_F1   ,_______ ,_______ ,                          _______ ,_______ ,KC_F13  ,KC_F16  ,KC_F19  ,KC_F22  ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_F11  ,KC_F8   ,KC_F5   ,KC_F2   ,_______ ,_______ ,                          _______ ,_______ ,KC_F14  ,KC_F17  ,KC_F20  ,KC_F23  ,_______ ,
+     KC_WAKE ,KC_F11  ,KC_F8   ,KC_F5   ,KC_F2   ,_______ ,_______ ,                          _______ ,_______ ,KC_F14  ,KC_F17  ,KC_F20  ,KC_F23  ,KC_SLEP ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______ ,KC_F12  ,KC_F9   ,KC_F6   ,KC_F3   ,_______ ,_______ ,_______ ,        _______ ,_______ ,_______ ,KC_F15  ,KC_F18  ,KC_F21  ,KC_F24  ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
@@ -559,24 +539,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   //    TOP ROW OVERLAYS                TOP ROW OVERLAYS            TOP ROW OVERLAYS            TOP ROW OVERLAYS            TOP ROW OVERLAYS
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
-  
-    [_TOP_NUMBERS] = LAYOUT(
-  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     _______ ,KC_1    ,KC_2    ,KC_3    ,KC_4    ,KC_5    ,                                            KC_6    ,KC_7    ,KC_8    ,KC_9    ,KC_0    ,_______ ,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
-  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
-  ),
 
       [_TOP_MEDIA] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     KC_MAIL ,KC_CALC ,KC_MYCM ,KC_MSEL ,KC_BRID ,KC_BRIU ,                                            KC_MPRV ,KC_MNXT ,KC_MUTE ,KC_VOLD ,KC_VOLU ,KC_MPLY ,
+     _______ ,KC_MUTE ,KC_MNXT ,KC_VOLU ,KC_BRIU ,_______ ,                                            _______ ,KC_BRID ,KC_VOLD ,KC_MPRV ,KC_MSTP ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
@@ -587,35 +553,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
   ),
-
-      [_TOP_FUNCS1] = LAYOUT(
-  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     KC_F1   ,KC_F2   ,KC_F3   ,KC_F4   ,KC_F5   ,KC_F6   ,                                            KC_F7   ,KC_F8   ,KC_F9   ,KC_F10  ,KC_F11  ,KC_F12  ,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
-  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
-  ),
-
-      [_TOP_FUNCS2] = LAYOUT(
-  //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     KC_F13  ,KC_F14  ,KC_F15  ,KC_F16  ,KC_F17  ,KC_F18  ,                                            KC_F19  ,KC_F20  ,KC_F21  ,KC_F22  ,KC_F23  ,KC_F24  ,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                          _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,        _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
-  //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
-     _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
-  //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
-  ),    
-
   
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   //    NAVIGATION LAYERS           NAVIGATION LAYERS           NAVIGATION LAYERS           NAVIGATION LAYERS           NAVIGATION LAYERS
@@ -772,7 +709,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 			}
 		}
 		return true;
-		
+
+#ifdef KEEB_HAS_LEDS
+	case MED_L:
+		blu_led_on;
+		if((layer_state & LAYER_CODE(_TOP_MEDIA)) == 0){
+			red_led_on; ylw_led_on;
+		}
+#endif
+
   }
   return true;
 };
