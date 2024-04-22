@@ -1,21 +1,17 @@
 #include QMK_KEYBOARD_H
 
-// -------------------------------------------------------------------------------------------------------    
-//   LAYOUT USAGE TIPS
-// -------------------------------------------------------------------------------------------------------    
-
-/*
-    - When using LT(layer, key), double tap key and keep it pressed to spam key without activating layer
-    - Use left thumb cluster with key caps that have a 'plane profile' (with small bevel margins) in order to facilitate comboing shift, ctrl and alt
-    - Use tilted keys to swipe type to a lower row 
-*/  
+// LEDs are used to indicate layer transitions/usage
+// 	comment the following line if the keeb has no LEDs
+#define KEEB_HAS_LEDS
+#define CHANGE_LED_CODES
 
 
 
 // -------------------------------------------------------------------------------------------------------    
 //   CUSTOM BEHAVIORS  
 // -------------------------------------------------------------------------------------------------------    
-#if 1
+//#define ENABLE_DOMINANT_HAND_SWAP
+#ifdef ENABLE_DOMINANT_HAND_SWAP
 
 void SWAP_DOMINANT_HAND(keyrecord_t *record){
     if (record->event.pressed ) { 
@@ -24,8 +20,11 @@ void SWAP_DOMINANT_HAND(keyrecord_t *record){
     }
 }
 
-
+#else
+#define SW_HAND  XXXXXXX
+#endif
 //-----------------------------------------------------------------
+#if 1
 layer_state_t pseudo_layer_hack = 0;
 // pseudo_layer_hack keeps track of the NAVIGATION & SYMBOL states
 // in order to implement a functionality similar to tri-layer.
@@ -36,16 +35,11 @@ layer_state_t pseudo_layer_hack = 0;
 #endif 
 
 // -------------------------------------------------------------------------------------------------------    
-//   redifine colors names     
+//   LEDs colors    
 // -------------------------------------------------------------------------------------------------------    
 #if 1
-//notes regarding leds on my keeb
-// default set red => lights green
-// default set green => lights red
-// default set blue => lights yellow
-// added a new code to use the additional blue light.
 
-// leds order: B R Y G
+#if	!defined(KEEB_HAS_LEDS) || defined(CHANGE_LED_CODES)
 
 #undef red_led_off
 #undef red_led_on
@@ -59,6 +53,17 @@ layer_state_t pseudo_layer_hack = 0;
 #undef blu_led_off
 #undef blu_led_on
 
+#endif
+
+#ifdef KEEB_HAS_LEDS
+#ifdef CHANGE_LED_CODES
+//notes regarding leds on my keeb
+// default set red => lights green
+// default set green => lights red
+// default set blue => lights yellow
+// added a new code to use the additional blue light.
+
+// leds order: B R Y G
 
 #define red_led_off   PORTD |= (1<<1)
 #define red_led_on    PORTD &= ~(1<<1)
@@ -69,6 +74,19 @@ layer_state_t pseudo_layer_hack = 0;
 #define grn_led_off   PORTF |= (1<<5)
 #define grn_led_on    PORTF &= ~(1<<5)
 
+#endif //CHANGE_LED_CODES
+#else // ! KEEB_HAS_LEDS
+
+#define red_led_off   
+#define red_led_on    
+#define blu_led_off   
+#define blu_led_on    
+#define ylw_led_off   
+#define ylw_led_on    
+#define grn_led_off   
+#define grn_led_on    
+	
+#endif // KEEB_HAS_LEDS
 
 #define set_led_off     red_led_off;  grn_led_off;  ylw_led_off ;  blu_led_off
 #define set_led_red     red_led_on ;  grn_led_off;  ylw_led_off ;  blu_led_off
@@ -77,9 +95,7 @@ layer_state_t pseudo_layer_hack = 0;
 #define set_led_blue    red_led_off;  grn_led_off;  ylw_led_off ;  blu_led_on
 #define set_led_all     red_led_on ;  grn_led_on ;  ylw_led_on ;  blu_led_on
 
-
 #endif
-    
 // -------------------------------------------------------------------------------------------------------    
 //   LAYERS IDs and descriptions
 // -------------------------------------------------------------------------------------------------------   
@@ -139,7 +155,10 @@ layer_state_t pseudo_layer_hack = 0;
 
 enum custom_keycodes {
   QMKBEST = SAFE_RANGE, 
+
+#ifdef ENABLE_DOMINANT_HAND_SWAP
   SW_HAND,
+#endif
 };
 
 // Shortcuts to make keymap more readable
@@ -651,8 +670,9 @@ bool is_alpha_layer(uint16_t keycode){
         || keycode == TO_QWER ;
 }
 
-// used to keep leds lit when the state is temporarily active after quick tap
-void matrix_scan_user(void) {  
+
+#ifdef KEEB_HAS_LEDS
+void matrix_scan_user(void) { // used to keep leds lit when the state is temporarily active after quick tap
     set_led_off;
   
     if( layer_state & 
@@ -667,10 +687,11 @@ void matrix_scan_user(void) {
     
     if(layer_state & LAYER_CODE(_MOUSE)) ylw_led_on;   
 }
+#endif
 
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  
+#ifdef KEEB_HAS_LEDS  
   if(is_alpha_layer(keycode)){
     if (record->event.pressed) {
         blu_led_on; 
@@ -691,13 +712,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     //return true;
   }
-  
+#endif //KEEB_HAS_LEDS  
   
   switch (keycode) {
      
+#ifdef ENABLE_DOMINANT_HAND_SWAP
     case SW_HAND:
         SWAP_DOMINANT_HAND(record);
         return false;
+#endif //ENABLE_DOMINANT_HAND_SWAP
           
     case TO_BASE:
 		if (record->event.pressed)
