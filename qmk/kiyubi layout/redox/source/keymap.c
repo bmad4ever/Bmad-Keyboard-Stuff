@@ -17,73 +17,11 @@
 // -------------------------------------------------------------------------------------------------------    
 #if 1
 
-//failed to reproduce exact same behavior as the system. 
-//as close as I could get without jeopardizing the typing experience. 
-//The default system is behavior is the following:
-//  With key and shift pressed, it should pause when when shift if released and then spam kc1.
-//  With key pressed, it should stop inputing when shift is pressed.
-//The implemented behavior does not allow spam when key is being pressed, only allows for a single character per click.
-
-bool prevShiftState = false;
-bool thisShiftState = false;
-bool oneShotedShift = false;
-uint16_t kc; //registered key code set by SHIFT_MOD
-
-void SHIFT_MOD(uint16_t kc1,uint16_t kc2, keyrecord_t *record) 
-{ 
-      
-      if (record->event.pressed ) { 
-        if (thisShiftState) {  
-          if ((QK_LSFT & kc2) == 0) {
-              if(oneShotedShift) clear_oneshot_mods(); 
-              unregister_mods(MOD_BIT(KC_LSFT)); 
-          }
-          register_code(kc = kc2); 
-          if(!oneShotedShift) register_mods(MOD_BIT(KC_LSFT));
-        } else {
-            if ((QK_LSFT & kc1) != 0) register_mods(MOD_BIT(KC_LSFT));
-            register_code(kc = kc1); 
-            unregister_mods(MOD_BIT(KC_LSFT));
-        }
-        unregister_code(kc); //simplify and make consistent. user can't loop neither one of the characters.
-      }
-}
-
-void SHIFT_MOD_MARK(uint16_t kc1, keyrecord_t *record) 
-{ 
-      if (record->event.pressed ) { 
-        if (thisShiftState) {  
-          clear_oneshot_mods();
-          unregister_mods(MOD_BIT(KC_LSFT)); 
-          
-          register_mods(MOD_BIT(KC_LALT));
-          
-          SEND_STRING(SS_TAP(X_P8) SS_TAP(X_P2) SS_TAP(X_P5)  SS_TAP(X_P1) );
-          
-          unregister_mods(MOD_BIT(KC_LALT));
-          
-          if(!oneShotedShift) register_mods(MOD_BIT(KC_LSFT));
-        } else {
-            if ((QK_LSFT & kc1) != 0) register_mods(MOD_BIT(KC_LSFT));
-            register_code(kc = kc1); 
-            unregister_mods(MOD_BIT(KC_LSFT));
-            unregister_code(kc); 
-        }
-      }
-}
-
-
 void SWAP_DOMINANT_HAND(keyrecord_t *record){
     if (record->event.pressed ) { 
       leftDominantMode=!leftDominantMode;  
       swap_hands=!swap_hands;
     }
-}
-
-
-#define SHIFT_CLEAR_MOD() \
-{ \
-      unregister_code(kc); \
 }
 
 
@@ -200,11 +138,7 @@ layer_state_t pseudo_layer_hack = 0;
 
 
 enum custom_keycodes {
-  QMKBEST = SAFE_RANGE,
-  CMMxDQO,  // comma  or  double quote when shifted 
-  DOTxAT,  // dot  or  at sign when shifted 
-  QUOxRMK,  // quote   or   reference mark when shifted 
-  SCLxGRV,  // semicolon  or  grave when shifted 
+  QMKBEST = SAFE_RANGE, 
   SW_HAND,
 };
 
@@ -267,6 +201,21 @@ enum custom_keycodes {
 
 #define CAPxF22 LT(0,KC_CAPS)
 
+
+// - - - - - - - - - - - - - - - - - -
+//		KEY OVERRIDES
+
+const key_override_t dot_at_override = ko_make_with_layers(MOD_MASK_SHIFT, KC_DOT, KC_AT, 1<<_KIYUBI);
+const key_override_t comma_quotes_override = ko_make_with_layers(MOD_MASK_SHIFT, KC_COMM, KC_DQUO, 1<<_KIYUBI);
+const key_override_t semic_grave_override = ko_make_with_layers(MOD_MASK_SHIFT, KC_SCLN, KC_GRV, 1<<_KIYUBI);
+//const key_override_t apos_quotes = ko_make_basic(MOD_MASK_SHIFT, KC_QUOT, );
+
+// This globally defines all key overrides to be used
+const key_override_t **key_overrides = (const key_override_t *[]){
+    &dot_at_override,
+    &comma_quotes_override,
+    NULL // Null terminate the array of overrides!
+};
 
 // - - - - - - - - - - - - - - - - - -
 //     TAP DANCE 
@@ -529,11 +478,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______ ,KC_1    ,KC_2    ,KC_3    ,KC_4    ,KC_5    ,                                            KC_6    ,KC_7    ,KC_8    ,KC_9    ,KC_0    ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,QUOxRMK ,KC_Y    ,KC_O    ,KC_F    ,SCLxGRV ,_______ ,                          _______ ,KC_V    ,KC_C    ,KC_L    ,KC_P    ,CMMxDQO ,_______ ,
+     _______ ,KC_QUOT ,KC_Y    ,KC_O    ,KC_F    ,KC_SCLN ,_______ ,                          _______ ,KC_V    ,KC_C    ,KC_L    ,KC_P    ,KC_COMM ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______ ,KC_H    ,KC_I    ,KC_E    ,KC_A    ,KC_U    ,_______ ,                          _______ ,KC_D    ,KC_S    ,KC_T    ,KC_N    ,KC_R    ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_Q    ,KC_X    ,DOTxAT  ,KC_K    ,KC_Z    ,_______ ,_______ ,        _______ ,_______ ,KC_W    ,KC_G    ,KC_M    ,KC_B    ,KC_J    ,_______ ,
+     _______ ,KC_Q    ,KC_X    ,KC_DOT  ,KC_K    ,KC_Z    ,_______ ,_______ ,        _______ ,_______ ,KC_W    ,KC_G    ,KC_M    ,KC_B    ,KC_J    ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -663,7 +612,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_WBAK ,KC_HOME ,KC_LEFT ,KC_DOWN ,KC_RGHT ,KCzUNDO ,_______ ,                          _______ ,KC_PPLS ,KC_P1   ,KC_P2   ,KC_P3   ,KC_PAST ,KC_WFWD ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_END  ,KCxCUT_ ,KCcCOPY ,KCvPSTE ,KCdDUP_ ,_______ ,_______ ,        _______ ,_______ ,CMMxDQO ,KC_P0   ,KC_P0   ,KC_PDOT ,KC_PENT ,_______ ,
+     _______ ,KC_END  ,KCxCUT_ ,KCcCOPY ,KCvPSTE ,KCdDUP_ ,_______ ,_______ ,        _______ ,_______ ,KC_COMM ,KC_P0   ,KC_P0   ,KC_PDOT ,KC_PENT ,_______ ,
   //├────────┼────────┼────────┼────────┼────┬───┴────┬───┼────────┼────────┤       ├────────┼────────┼───┬────┴───┬────┼────────┼────────┼────────┼────────┤
      _______ ,_______ ,_______ ,_______ ,     _______ ,    _______ ,_______ ,        _______ ,_______ ,    _______ ,     _______ ,_______ ,_______ ,_______
   //└────────┴────────┴────────┴────────┘    └────────┘   └────────┴────────┘       └────────┴────────┘   └────────┘    └────────┴────────┴────────┴────────┘
@@ -744,38 +693,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     //return true;
   }
-
-  // check shift state
-  thisShiftState = get_mods() & MOD_MASK_SHIFT ;
-  thisShiftState|= (record->event.pressed && keycode == OSM_SFT) ;
-  thisShiftState&= ! (!record->event.pressed && keycode == OSM_SFT) ;
-  oneShotedShift = ( get_oneshot_mods() & MOD_LSFT );
-  thisShiftState|= oneShotedShift;
-  
-  if(thisShiftState != prevShiftState)
-    SHIFT_CLEAR_MOD()
-  
-  prevShiftState = thisShiftState;
   
   
   switch (keycode) {
      
-    case CMMxDQO:
-        SHIFT_MOD(KC_COMM, KC_DQUO,record);
-        return false;             
-
-    case DOTxAT:
-        SHIFT_MOD(KC_DOT, KC_AT,record);
-        return false;     
-
-    case SCLxGRV:
-		SHIFT_MOD(KC_SCLN, KC_GRV,record);
-		return false;     
-
-    case QUOxRMK:
-        SHIFT_MOD_MARK(KC_QUOT, record);
-            return false;  
-    
     case SW_HAND:
         SWAP_DOMINANT_HAND(record);
         return false;

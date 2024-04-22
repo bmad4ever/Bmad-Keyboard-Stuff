@@ -14,6 +14,7 @@ AUTO_SHIFT_ENABLE          = yes
 COMBO_ENABLE               = yes
 DYNAMIC_MACRO_ENABLE       = no  
 KEY_LOCK_ENABLE            = yes
+KEY_OVERRIDE_ENABLE        = yes 
 PROGRAMMABLE_BUTTON_ENABLE = no
 SWAP_HANDS_ENABLE          = yes
 TAP_DANCE_ENABLE           = yes
