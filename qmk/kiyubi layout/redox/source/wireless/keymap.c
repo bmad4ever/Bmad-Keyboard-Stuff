@@ -7,6 +7,8 @@
 
 
 
+
+
 // -------------------------------------------------------------------------------------------------------    
 //   CUSTOM BEHAVIORS  
 // -------------------------------------------------------------------------------------------------------    
@@ -115,19 +117,19 @@ layer_state_t pseudo_layer_hack = 0;
 //letters layout with some keys remaining from the vanilla qwerty layout for redox.
 //standard qwerty, can be changed to other layout in the OS.
 
-#define _SYMB 3
+#define _SYMB 4
 //symbols layer
 
-#define _FUNCTIONS 4
+#define _FUNCTIONS 5
 // all F keys, 1 to 24
 
 // - - - - - - - - - - - -
 // top row overlays
 //#define _TOP_NUMBERS 5   // already in kiyubi & qwerty layers
-#define _TOP_MEDIA 5
+#define _TOP_MEDIA 6
 // - - - - - - - - - - - -
 
-#define _MOUSE 6
+#define _MOUSE 3
 //navigation using mouse, home, end, etc... 
 //also has shortcuts for copy, paste, and similar...
 
@@ -262,6 +264,7 @@ void soft_reset(void){
   clear_oneshot_mods();
   clear_mods();
   clear_oneshot_locked_mods();
+  reset_oneshot_layer();
   clear_keyboard();
   cancel_key_lock();
 }
@@ -349,6 +352,8 @@ OSMCA ,
 OSMSCA,
 RTCC1, // right thumb cluster combo 1 ( named after pressed keys )
 RTCC2,
+
+PWROFF, // escape + ralt on FUNC layer -> powers off pc ( implemented as combo to prevent misfires )
 };
 
 const uint16_t PROGMEM OSMSA_combo[] = {OSM_SFT, OSM_ALT, COMBO_END};
@@ -358,6 +363,7 @@ const uint16_t PROGMEM OSMSCA_combo[] = {OSM_SFT, OSM_CTL, OSM_ALT, COMBO_END};
 const uint16_t PROGMEM RTCC1_combo[] = {KC_BSPC, TD_APP, COMBO_END};
 const uint16_t PROGMEM RTCC2_combo[] = {OSM_GUI, KC_SPC, COMBO_END};
 //const uint16_t PROGMEM F24C_combo[] = {SYM_L, NAV_LxT, COMBO_END}; // pseudo, not a combo, but similar
+const uint16_t PROGMEM PWROFF_combo[] = {KC_SYRQ, TD_ESC, COMBO_END};
 combo_t key_combos[] = {
     [OSMSA]  = COMBO(OSMSA_combo   , SFT_ALT)  ,
     [OSMSC]  = COMBO(OSMSC_combo   , SFT_CTL)  ,
@@ -365,7 +371,15 @@ combo_t key_combos[] = {
     [OSMSCA] = COMBO(OSMSCA_combo  , OSM_MEH)  ,
     [RTCC1]  = COMBO(RTCC1_combo   , LALT(KC_F4)) , // if this works well, consider removing from escape key.
     [RTCC2]  = COMBO(RTCC2_combo   , OSL(_FUNCTIONS))  ,
+	
+    [PWROFF]  = COMBO(PWROFF_combo   , KC_PWR)  ,
 };
+
+
+
+// function below is untested; KC_SYRQ is used in FUNC layer for the POWEROFF combo, so there is not need to check layer when comboing
+//bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) 
+//{return (PWROFF != combo_index) || (is_oneshot_layer_active() && get_oneshot_layer() == _FUNCTIONS);}
 
 #endif
 
@@ -526,7 +540,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,KC_F10  ,KC_F7   ,KC_F4   ,KC_F1   ,_______ ,_______ ,                          _______ ,_______ ,KC_F13  ,KC_F16  ,KC_F19  ,KC_F22  ,_______ ,
+     _______ ,KC_F10  ,KC_F7   ,KC_F4   ,KC_F1   ,_______ ,_______ ,                          KC_SYRQ ,_______ ,KC_F13  ,KC_F16  ,KC_F19  ,KC_F22  ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_WAKE ,KC_F11  ,KC_F8   ,KC_F5   ,KC_F2   ,_______ ,_______ ,                          _______ ,_______ ,KC_F14  ,KC_F17  ,KC_F20  ,KC_F23  ,KC_SLEP ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
@@ -562,7 +576,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______ ,_______ ,GOTO1__ ,KCfFIND ,KChRPLC ,GOTO2__ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐                         ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     _______ ,GOTO2__ ,KC_HOME ,KC_MS_U ,KC_END  ,KCyREDO ,_______ ,                          _______ ,KC_PMNS ,KC_WH_L ,KC_WH_R ,KC_WH_U ,KC_ACL1 ,_______ ,
+     _______ ,GOTO2__ ,KC_PGUP ,KC_MS_U ,KC_PGDN ,KCyREDO ,_______ ,                          _______ ,KC_PMNS ,KC_WH_L ,KC_WH_R ,KC_WH_U ,KC_ACL1 ,_______ ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┤                         ├────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_WBAK ,KC_HOME ,KC_MS_L ,KC_MS_D ,KC_MS_R ,KCzUNDO ,_______ ,                          _______ ,KC_PPLS ,KC_BTN1 ,KC_BTN2 ,KC_WH_D ,KC_ACL2 ,KC_WFWD ,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┐       ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┼────────┤
