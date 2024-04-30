@@ -238,6 +238,7 @@ const key_override_t mute_stop_override = ko_make_basic(MOD_MASK_SHIFT, KC_MUTE,
 const key_override_t **key_overrides = (const key_override_t *[]){
     &dot_at_override,
     &comma_quotes_override,
+	&semic_grave_override,
 	
 	&volume_up_dn_override,
 	&brightness_up_dn_override,

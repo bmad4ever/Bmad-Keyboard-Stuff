@@ -260,6 +260,7 @@ const key_override_t mute_stop_override = ko_make_basic(MOD_MASK_SHIFT, KC_MUTE,
 const key_override_t **key_overrides = (const key_override_t *[]){
     &dot_at_override,
     &comma_quotes_override,
+	&semic_grave_override,
 	
 	&volume_up_dn_override,
 	&brightness_up_dn_override,
@@ -539,7 +540,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
   //    SYMBOL LAYERS           SYMBOL LAYERS           SYMBOL LAYERS           SYMBOL LAYERS           SYMBOL LAYERS           SYMBOL LAYERS       
   // ------------------------------------------------------------------------------------------------------------------------------------------------------------
-  
+  //Note : KC_PEQL won't work on windows, so fast combo into EQL seems unsolvable
+  //		overriding mod doesn't seem to solve the problem either
+  //       combo will likely solve it, but don't think I have the space for a custom output
   [_SYMB] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                                           ┌────────┬────────┬────────┬────────┬────────┬────────┐
      _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,                                            _______ ,_______ ,_______ ,_______ ,_______ ,_______ ,
