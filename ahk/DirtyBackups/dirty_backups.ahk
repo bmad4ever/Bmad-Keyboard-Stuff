@@ -55,10 +55,9 @@ Tray := A_TrayMenu
 Tray.Delete()                                          ; Remove default AHK items
 
 Tray.Add("Open Backup Folder",  (*) => OpenBackupFolder())
-Tray.Add()                                             ; Separator
-Tray.Add("Copy Selected Files", (*) => BackupSelectedFiles())
-Tray.Add("Move Selected Files", (*) => MoveSelectedFiles())
 Tray.Add("Save Clipboard",      (*) => BackupClipboard())
+Tray.Add()                                             ; Separator
+Tray.Add("Delete All Backups",  (*) => DeleteAllBackups())
 Tray.Add()                                             ; Separator
 Tray.Add("Exit",                (*) => ExitApp())
 
@@ -175,6 +174,48 @@ OpenBackupFolder() {
     global BackupFolder
     EnsureFolder(BackupFolder)
     Run('explorer.exe "' BackupFolder '"')
+}
+
+
+; ──────────────────────────────────────────────────────────────
+; FUNCTION: Delete all files in the backup folder (tray only)
+;           Asks for confirmation before doing anything.
+; ──────────────────────────────────────────────────────────────
+DeleteAllBackups() {
+    global BackupFolder
+    if !DirExist(BackupFolder) {
+        MsgBox("The backup folder does not exist yet.`n`n" BackupFolder, "Delete All Backups", "OK Icon!")
+        return
+    }
+
+    count := 0
+    loop files BackupFolder "\*.*"
+        count++
+
+    if count = 0 {
+        MsgBox("The backup folder is already empty.", "Delete All Backups", "OK Icon!")
+        return
+    }
+
+    answer := MsgBox(
+        "This will permanently delete all " count " file(s) in:`n`n" BackupFolder "`n`nThis cannot be undone. Continue?",
+        "Delete All Backups",
+        "YesNo Icon! Default2"   ; Default button is No
+    )
+    if answer != "Yes"
+        return
+
+    failed := 0
+    loop files BackupFolder "\*.*" {
+        try FileDelete(A_LoopFileFullPath)
+        catch
+            failed++
+    }
+
+    if failed = 0
+        Notify("Backup Cleared", "All files deleted from backup folder.", true)
+    else
+        Notify("Partial Delete", failed " file(s) could not be deleted.", false)
 }
 
 
