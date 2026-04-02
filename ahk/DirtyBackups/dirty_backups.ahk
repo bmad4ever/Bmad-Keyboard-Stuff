@@ -2,11 +2,11 @@
 #SingleInstance Force
 
 ; ╔══════════════════════════════════════════════════════════════╗
-; ║                     USER CONFIGURATION                       ║
+; ║                     USER CONFIGURATION                      ║
 ; ║  Edit the path below to point to your desired backup folder. ║
 ; ║  Use a full absolute path. Examples:                         ║
-; ║    BackupFolder := "C:\Users\YourName\Backup"                ║
-; ║    BackupFolder := "D:\MyBackups"                            ║
+; ║    BackupFolder := "C:\Users\YourName\Backup"               ║
+; ║    BackupFolder := "D:\MyBackups"                           ║
 ; ╚══════════════════════════════════════════════════════════════╝
 
 BackupFolder := "A:\DIRTY_BACKUPS"
@@ -15,11 +15,11 @@ BackupFolder := "A:\DIRTY_BACKUPS"
 _ov := {alpha: 0, gui: ""}
 
 ; ╔══════════════════════════════════════════════════════════════╗
-; ║                         HOTKEYS                              ║
-; ║  F23              → Open the backup folder in Explorer     	 ║
-; ║  Shift + F23      → Copy selected file(s) to backup        	 ║
-; ║  Ctrl  + F23      → Move selected file(s) to backup        	 ║
-; ║  Alt   + F23      → Save clipboard text as timestamped file	 ║
+; ║                         HOTKEYS                             ║
+; ║  F23              → Open the backup folder in Explorer     ║
+; ║  Shift + F23      → Copy selected file(s) to backup        ║
+; ║  Ctrl  + F23      → Move selected file(s) to backup        ║
+; ║  Alt   + F23      → Save clipboard text as timestamped file║
 ; ╚══════════════════════════════════════════════════════════════╝
 
 ; Shift+F23 and Ctrl+F23 are scoped to Explorer windows (file selection only makes sense there)
@@ -34,21 +34,21 @@ F23::  OpenBackupFolder()
 
 
 ; ╔══════════════════════════════════════════════════════════════╗
-; ║                       TRAY ICON SETUP                        ║
-; ║                                                              ║
-; ║  The icon is pulled from shell32.dll, which ships with       ║
-; ║  every version of Windows — no external file needed.         ║
-; ║                                                              ║
-; ║  To use a custom .ico file instead, replace the              ║
-; ║  TraySetIcon line with:                                      ║
-; ║    TraySetIcon("C:\path\to\your\icon.ico")                   ║
+; ║                       TRAY ICON SETUP                       ║
+; ║                                                             ║
+; ║  The icon is pulled from shell32.dll, which ships with      ║
+; ║  every version of Windows — no external file needed.        ║
+; ║                                                             ║
+; ║  To use a custom .ico file instead, replace the            ║
+; ║  TraySetIcon line with:                                     ║
+; ║    TraySetIcon("C:\path\to\your\icon.ico")                 ║
 ; ╚══════════════════════════════════════════════════════════════╝
 
 ; Folder icon from the built-in Windows shell icon library
 TraySetIcon("shell32.dll", 4)
 
 ; Tooltip text shown when hovering over the tray icon
-A_IconTip := "Backup Utility`n`nF23           Open backup folder`nShift+F23   Copy selected files`nCtrl+F23    Move selected files`nAlt+F23     Save clipboard`n"
+A_IconTip := "Backup Utility`n`nF23           Open backup folder`nShift+F23   Copy selected files`nCtrl+F23    Move selected files`nAlt+F23     Save clipboard"
 
 ; Build the right-click tray menu
 Tray := A_TrayMenu
@@ -56,6 +56,8 @@ Tray.Delete()                                          ; Remove default AHK item
 
 Tray.Add("Open Backup Folder",  (*) => OpenBackupFolder())
 Tray.Add()                                             ; Separator
+Tray.Add("Copy Selected Files", (*) => BackupSelectedFiles())
+Tray.Add("Move Selected Files", (*) => MoveSelectedFiles())
 Tray.Add("Save Clipboard",      (*) => BackupClipboard())
 Tray.Add()                                             ; Separator
 Tray.Add("Exit",                (*) => ExitApp())
@@ -83,7 +85,8 @@ BackupSelectedFiles() {
     for filePath in files {
         SplitPath(filePath, &fileName)
         try {
-            FileCopy(filePath, BackupFolder "\" fileName, 1)  ; 1 = overwrite
+            dest := UniqueDestPath(BackupFolder "\" fileName)
+            FileCopy(filePath, dest)
             copied++
         } catch {
             failed++
@@ -120,7 +123,8 @@ MoveSelectedFiles() {
     for filePath in files {
         SplitPath(filePath, &fileName)
         try {
-            FileMove(filePath, BackupFolder "\" fileName, 1)  ; 1 = overwrite
+            dest := UniqueDestPath(BackupFolder "\" fileName)
+            FileMove(filePath, dest)
             moved++
         } catch {
             failed++
@@ -198,6 +202,17 @@ GetExplorerSelectedFiles() {
 EnsureFolder(path) {
     if !DirExist(path)
         DirCreate(path)
+}
+
+; Given a full destination path, returns a path that does not yet exist.
+; If "C:\Backup\report.pdf" is taken, returns "C:\Backup\report_2026-04-01_14-32-05.pdf".
+UniqueDestPath(destPath) {
+    if !FileExist(destPath)
+        return destPath
+    SplitPath(destPath, , &dir, &ext, &stem)
+    ts      := FormatTime(, "yyyy-MM-dd_HH-mm-ss")
+    newName := stem "_" ts (ext != "" ? "." ext : "")
+    return dir "\" newName
 }
 
 ; Plays a sound and flashes a translucent overlay at screen centre.

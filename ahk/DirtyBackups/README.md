@@ -30,6 +30,10 @@ clipboard_2026-04-01_14-32-05.txt
 
 This is useful for quickly preserving a snippet, a web address, a note — anything you have copied without needing to open an editor and save manually.
 
+## Same Name Files
+
+When a copy or move is done to a file whose name already exists in the backup folder, a timestamp is added to the end of the filename to avoid collisions.
+
 
 ## Confirmation Feedback
 
