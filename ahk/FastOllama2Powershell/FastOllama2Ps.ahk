@@ -317,5 +317,6 @@ CloseGui:
 return
 
 GuiEscape:
+GuiClose:
     Gosub, CloseGui
 return
