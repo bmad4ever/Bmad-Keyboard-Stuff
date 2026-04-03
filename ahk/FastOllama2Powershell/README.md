@@ -10,7 +10,8 @@ A fast, interactive AutoHotkey (v1.1) interface for Ollama that allows you to ge
 4.  **Phase 2 (PowerShell)**: Press **Enter** again to execute the text in the box as a PowerShell command.
 5.  **Finished**: The command result is displayed. The window is now locked. Press **Enter** or **Escape** to close the window.
 
-> [!Note] At any point the window can be closed using the **Escape** key. 
+> [!NOTE] 
+> At any point the window can be closed using the **Escape** key. 
 
 ## Configuration
 
