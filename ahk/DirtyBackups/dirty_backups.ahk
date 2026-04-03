@@ -24,13 +24,45 @@ _ov := {alpha: 0, gui: ""}
 
 ; Shift+F23 and Ctrl+F23 are scoped to Explorer windows (file selection only makes sense there)
 #HotIf WinActive("ahk_class CabinetWClass") or WinActive("ahk_class ExploreWClass")
-+F23:: BackupSelectedFiles()
-^F23:: MoveSelectedFiles()
++F23:: {
+    static busy := false
+    if busy
+        return
+    busy := true
+    BackupSelectedFiles()
+    KeyWait("F23")
+    busy := false
+}
+^F23:: {
+    static busy := false
+    if busy
+        return
+    busy := true
+    MoveSelectedFiles()
+    KeyWait("F23")
+    busy := false
+}
 #HotIf
 
 ; These two work globally
-F23::  OpenBackupFolder()
-!F23:: BackupClipboard()
+F23:: {
+    static busy := false
+    if busy
+        return
+    busy := true
+    OpenBackupFolder()
+    KeyWait("F23")
+    busy := false
+}
+!F23:: {
+    static busy := false
+    if busy
+        return
+    busy := true
+    BackupClipboard()
+    KeyWait("F23")
+    busy := false
+}
 
 
 ; ╔══════════════════════════════════════════════════════════════╗
