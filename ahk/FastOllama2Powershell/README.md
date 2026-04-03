@@ -1,4 +1,4 @@
-# OnTheFlyOllama
+# Fast Ollama to Powershell
 
 A fast, interactive AutoHotkey (v1.1) interface for Ollama that allows you to generate and execute PowerShell commands on the fly.
 
@@ -14,7 +14,7 @@ A fast, interactive AutoHotkey (v1.1) interface for Ollama that allows you to ge
 
 ## Configuration
 
-You can customize the script by editing the variables at the top of `OnTheFlyOllama.ahk`:
+You can customize the script by editing the variables at the top of `FastOllama2Ps.ahk`:
 
 - `TriggerKey`: The hotkey that opens the window (e.g., `^Space`).
 - `OllamaModel`: The name of the Ollama model to use.
@@ -35,7 +35,7 @@ To get the best results (e.g., only receiving pure PowerShell commands without p
     ```powershell
     ollama create my_powershell_assistant -f Example_ModelFile
     ```
-4.  Update your `OnTheFlyOllama.ahk` configuration to use this new model name:
+4.  Update your `FastOllama2Ps.ahk` configuration to use this new model name:
     ```autohotkey
     OllamaModel := "my_powershell_assistant"
     ```
