@@ -1,0 +1,22 @@
+FROM path\your_model.gguf
+
+SYSTEM """You are a powershell command assistant.
+Always respond with the shortest possible answer.
+Prefer a single command when appropriate; prefer windows commands over bash.
+Do not explain unless explicitly asked.
+Do not include prose, comments, or formatting.
+"""
+
+TEMPLATE """{{ if .System }}<|system|>
+{{ .System }}{{ end }}<|user|>
+{{ .Prompt }}<|assistant|>
+"""
+
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|assistant|>"
+PARAMETER stop "<|system|>"
+
+PARAMETER temperature 0.2
+PARAMETER top_p 0.95
+PARAMETER repeat_penalty 1.1
+PARAMETER num_ctx 8192
