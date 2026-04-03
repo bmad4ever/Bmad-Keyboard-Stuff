@@ -198,16 +198,31 @@ RunExternalCommand(model, prompt, timeoutSeconds, isOllama, workingDir) {
     }
 
     ; Create a PowerShell script with Set-Location for the detected path
-    psScript = 
-    (LTrim
-    $OutputEncoding = [System.Text.Encoding]::UTF8
-    try {
-        Set-Location -Path "%workingDir%" -ErrorAction SilentlyContinue
-        %psCmd% | Out-File -FilePath "%tempOutputFile%" -Encoding utf8 -ErrorAction SilentlyContinue
-    } catch {
-        "Error executing command: $($_.Exception.Message)" | Out-File -FilePath "%tempOutputFile%" -Encoding utf8
+    if (isOllama) {
+        psScript = 
+        (LTrim
+        $OutputEncoding = [System.Text.Encoding]::UTF8
+        try {
+            Set-Location -Path "%workingDir%" -ErrorAction SilentlyContinue
+            %psCmd% | Out-File -FilePath "%tempOutputFile%" -Encoding utf8 -ErrorAction SilentlyContinue
+        } catch {
+            "Error executing command: $($_.Exception.Message)" | Out-File -FilePath "%tempOutputFile%" -Encoding utf8
+        }
+        )
+    } else {
+        psScript = 
+        (LTrim
+        $OutputEncoding = [System.Text.Encoding]::UTF8
+        `$ErrorActionPreference = "Continue"
+        try {
+            Set-Location -Path "%workingDir%" -ErrorAction SilentlyContinue
+            # Capture all streams (*>) for PowerShell phase
+            & { %psCmd% } *>&1 | Out-File -FilePath "%tempOutputFile%" -Encoding utf8
+        } catch {
+            "System Error: $($_.Exception.Message)" | Out-File -FilePath "%tempOutputFile%" -Encoding utf8
+        }
+        )
     }
-    )
     FileAppend, %psScript%, %tempPsFile%, UTF-8-RAW
     
     try {
@@ -236,8 +251,11 @@ RunExternalCommand(model, prompt, timeoutSeconds, isOllama, workingDir) {
             FileRead, output, *P65001 %tempOutputFile%
         }
         
-        if (output == "") {
-            return "Error: No output received from PowerShell. Verify the command works manually."
+        if (Trim(output) == "") {
+            if (isOllama)
+                return "Error: No output received from PowerShell. Verify the command works manually."
+            else
+                return "Command executed successfully (no output)."
         }
         
         ; Aggressive Cleaning (removes terminal artifacts)
