@@ -131,6 +131,12 @@ SubmitInput:
         Result := RunExternalCommand(OllamaModel, OriginalPrompt, OllamaTimeout, true, CurrentFolderPath)
         Result := Trim(Result, " `t`r`n")
         
+        ; Remove code indicators ``` only if they wrap the entire message
+        if (SubStr(Result, 1, 3) = "``````" && SubStr(Result, -2) = "``````") {
+            Result := SubStr(Result, 4, StrLen(Result) - 6)
+            Result := Trim(Result, " `t`r`n")
+        }
+        
         GuiControl,, PromptHistory, %OriginalPrompt%
         GuiControl, Enable, UserInput
         GuiControl,, UserInput, %Result%
