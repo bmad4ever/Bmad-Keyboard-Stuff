@@ -1,0 +1,48 @@
+# Variant of config.yaml that forces all vowels (a,e,i,o,u) onto the left hand.
+corpus:
+  path: "../corpus"
+  max_ngram_order: 5
+  data_dir: "data"
+
+fitness:
+  top_n:
+    3: 1000
+    4: 1000
+    5: 1000
+  # 4/5 weighted 12x as a near-prohibitive penalty against rare full-hand-
+  # alternation / full-hand-monopoly motion patterns -- see the long
+  # rationale comment in config.yaml and COST_RULES.md's "Order weights".
+  weights:
+    1: 1.0
+    2: 1.0
+    3: 1.0
+    4: 12.0
+    5: 12.0
+  # See config.yaml for the full rationale -- defaults to true (matches the
+  # original R LEGS assumption that same-finger "swipe" transitions are
+  # cheap); set false if your target keyboard doesn't support swiping.
+  allow_swipe_motions: true
+
+ga:
+  population_size: 200
+  generations: 600
+  crossover_rate: 0.9
+  mutation_rate: 0.15
+  elitism_count: 4
+  tournament_size: 5
+  seed: 42
+  adaptive_mutation: true
+
+visualization:
+  enabled: true
+  live_plot: false
+  plot_every: 10
+  output_dir: "results"
+
+logging:
+  output_dir: "results"
+
+constraints:
+  vowels_side:
+    weight: 0.2
+    side: left

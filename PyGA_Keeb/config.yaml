@@ -1,0 +1,109 @@
+# Configuration for the keyboard-layout GA (see claude.md for the full project plan).
+
+# NOTE: this section is documentation only -- no script reads it.
+# corpus_analysis.py takes its own --corpus/--max-order/--output-dir CLI
+# flags (see README.md step 1); these values just describe what was last
+# used to build the data/ngram_counts.json this config's other settings
+# (weights, top_n) assume. Keep them in sync manually if you rebuild with
+# different flags.
+corpus:
+  path: "../corpus"          # directory of text/markdown files used for n-gram counting
+  max_ngram_order: 5         # X: highest n-gram order to count/use (1..5 supported)
+  data_dir: "data"           # where corpus_analysis.py writes its output
+
+fitness:
+  # Top-N filtering for higher-order n-grams (order > 2), keyed by order.
+  # Set to null to disable filtering (use the full counted set) for that order.
+  top_n:
+    3: 1000
+    4: 1000
+    5: 1000
+  # Optional per-order weight multiplier (default 1.0 if an order is
+  # omitted), applied after normalization. See fitness.py's module
+  # docstring for the general mechanism.
+  #
+  # WHY weights 4 and 5 ARE NOT 1.0 -- READ BEFORE CHANGING:
+  # Comparing existing layouts (see compare_layouts.py) showed many
+  # distinct permutations scoring within ~1% of each other on orders 1-3
+  # (unigram reach + bigram/trigram motion) -- the search landscape has a
+  # broad plateau of "good enough" layouts rather than one sharp optimum.
+  # On a plateau like that, a handful of *specific, rare* higher-order
+  # motion patterns -- a 4-key run that fully alternates hands on every
+  # keystroke, or a 5-key run that never alternates hands at all (see
+  # COST_RULES.md sections 4 and 5) -- can be avoided almost for free,
+  # without giving up much (or anything) on the lower orders that
+  # dominate raw typing effort. 12x is a deliberately aggressive,
+  # near-prohibitive multiplier: at this magnitude orders 4 and 5 stop
+  # behaving like a small refinement and start behaving like a soft
+  # *constraint* (similar in spirit to constraints.py, but continuous and
+  # frequency-weighted instead of binary) that prunes layouts which hit
+  # those specific patterns often, while still leaving a wide selection of
+  # otherwise-different layouts to choose from. This number was chosen by
+  # inspecting how much it reordered a fixed set of existing layouts (it
+  # does, substantially -- that's the intended effect, not a bug), NOT
+  # derived from typing-speed data. If you change it: a value near 1.0
+  # makes orders 4/5 a negligible rounding error (their raw, per-character
+  # normalized contribution is naturally tiny, ~0.01-0.04, against a
+  # typical order 1-3 total of ~0.45); a value far above 12 risks orders
+  # 4/5 dominating the *entire* fitness, undermining the layout's actual
+  # typing speed for the sake of avoiding a handful of rare patterns. See
+  # COST_RULES.md's "Order weights" section for the full rationale and
+  # numbers behind this choice.
+  weights:
+    1: 1.0
+    2: 1.0
+    3: 1.0
+    4: 12.0
+    5: 12.0
+  # Whether the bigram cost may treat certain same-finger transitions as a
+  # cheap "swipe" -- sliding a finger across the keycap to an adjacent key
+  # instead of lifting and re-pressing (COST_RULES.md bigram rules #2/#3).
+  # This was the original R LEGS assumption, but most physical keyboards
+  # (mechanical, membrane, scissor-switch -- anything with per-key
+  # actuation) don't actually support it. Set to false if your target
+  # keyboard doesn't support swiping; those transitions will then cost the
+  # same "lift and re-press" rate as any other same-finger pair
+  # (costs.BIGRAM_SAME_FINGER_NO_SWIPE). Defaults to true if omitted.
+  allow_swipe_motions: true
+
+ga:
+  population_size: 200
+  generations: 600  # the marginal-cost fitness landscape is flatter (no double-counted
+                     # penalties inflating the gradient), so it converges slower; 300
+                     # generations was measurably short of convergence, 600 reaches parity
+                     # with the best hand-crafted reference layout
+  crossover_rate: 0.9
+  mutation_rate: 0.15
+  elitism_count: 4
+  tournament_size: 5
+  seed: 42
+  adaptive_mutation: true     # bump mutation rate when population diversity drops
+
+visualization:
+  enabled: true
+  live_plot: false            # true = update plot every generation (slower), false = plot at the end
+  plot_every: 10               # generations between live-plot refreshes when live_plot is true
+  output_dir: "results"
+
+logging:
+  output_dir: "results"
+
+# Optional constraints (claude.md 4.4; ported from R LEGS' soft-penalty
+# constraints in R/fitness/constraints/). Omit a key (or the whole section)
+# to disable that constraint. Each violated constraint adds its `weight`
+# directly to the fitness total (which is minimized), so the GA is pushed
+# away from -- but not strictly forbidden from -- violating it. See
+# constraints.py for the exact predicates. Key positions are 0-indexed,
+# row-major over the 3x10 grid (0..9 top row, 10..19 home row, 20..29
+# bottom row).
+#
+# constraints:
+#   fixed_positions:                  # force specific characters onto specific keys
+#     weight: 0.2
+#     positions:
+#       e: 13                          # 'e' pinned to the home-row index-finger key
+#   vowels_side:                       # force all vowels (a,e,i,o,u) onto one hand
+#     weight: 0.2
+#     side: left                       # or "right"
+#   non_letters_outer_corners:         # force punctuation into the 4 corner keys (0,9,20,29)
+#     weight: 0.2

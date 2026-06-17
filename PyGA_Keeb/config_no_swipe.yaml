@@ -1,0 +1,41 @@
+# Variant of config.yaml with allow_swipe_motions: false -- for keyboards
+# that don't support sliding a finger across keycaps (most physical
+# keyboards: mechanical, membrane, scissor-switch). Same-finger transitions
+# that the default config treats as a cheap "swipe" (COST_RULES.md bigram
+# rules #2/#3) are charged at the regular "lift and re-press" rate instead.
+corpus:
+  path: "../corpus"
+  max_ngram_order: 5
+  data_dir: "data"
+
+fitness:
+  top_n:
+    3: 1000
+    4: 1000
+    5: 1000
+  weights:
+    1: 1.0
+    2: 1.0
+    3: 1.0
+    4: 12.0
+    5: 12.0
+  allow_swipe_motions: false
+
+ga:
+  population_size: 200
+  generations: 600
+  crossover_rate: 0.9
+  mutation_rate: 0.15
+  elitism_count: 4
+  tournament_size: 5
+  seed: 42
+  adaptive_mutation: true
+
+visualization:
+  enabled: true
+  live_plot: false
+  plot_every: 10
+  output_dir: "results"
+
+logging:
+  output_dir: "results"
