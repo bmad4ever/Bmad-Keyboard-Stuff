@@ -50,7 +50,7 @@ Applied to every pair of consecutive characters.
 | 2 | Same finger, *different* key, but it's an index-finger "side swipe" onto an adjacent home-row key (no direction reversal) — treated as a cheap, natural motion *if your keyboard supports swiping* (see below). | 2.0 |
 | 3 | Same finger, different key, but it's a non-pinky finger swiping straight down one row in the same column — also treated as cheap *if swiping is supported*. | 2.0 |
 | 4 | Same finger, different key, no swipe pattern applies (the general/worst case): per-finger base cost, multiplied by the Euclidean distance between the two keys. | pinky 5.0, ring 4.0, middle 3.5, index 3.5 (×distance) |
-| 5 | The two characters are on different hands. Flat cost, regardless of which keys or how far apart -- this deliberately does not model the cross-hand "shape" (which specific fingers pair up, mirroring the inner/outer roll distinction same-hand pairs get). See the analysis section below for why. | 2.0 |
+| 5 | The two characters are on different hands. Flat cost, regardless of which keys or how far apart. (This is an *adjacent-pair-only* cost: it cannot see the same-hand "skip" transitions that occur *inside* a longer alternating run -- see the analysis section below.) | 2.0 |
 | 6 | Same hand, different fingers: charge per row crossed... | 1.0 per row |
 | 6a | ...plus a cost for the roll direction: rolling *inward* (toward the hand's center, e.g. pinky→index) is cheap... | 1.0 |
 | 6b | ...while rolling *outward* (away from center, e.g. index→pinky) is expensive. | 3.0 |
@@ -191,29 +191,36 @@ account for a healthy majority of the total before going higher.
   plausible mechanism, not something validated against this project's
   data or cited from a specific study, but it's a deliberate choice to
   fill a real gap (error-correction cost) rather than a double-count of
-  motion effort already charged elsewhere -- see bigram rule #5 above:
-  the flat different-hand bigram cost doesn't distinguish an "easy"
-  cross-hand pairing from an awkward one (no inner/outer-roll-style
-  shape sensitivity for hand-alternating pairs), so these rules are not
-  redundant with anything at the bigram level. This is *why* the 5-gram
-  rule pulls in the seemingly opposite direction (penalizing *zero*
-  alternation, not excess alternation): it's targeting a different
-  failure mode (one hand doing all the work, fatigue) with the same tool
-  (a fitness penalty), not contradicting the trigram/4-gram rules' logic.
+  motion effort already charged elsewhere -- see bigram rule #5 above and
+  the next bullet for why it isn't redundant with the bigram level. This
+  is *why* the 5-gram rule pulls in the seemingly opposite direction
+  (penalizing *zero* alternation, not excess alternation): it's targeting
+  a different failure mode (one hand doing all the work, fatigue) with
+  the same tool (a fitness penalty), not contradicting the trigram/4-gram
+  rules' logic.
 
 ## Rules and design choices still worth scrutinizing
 
-- **The cross-hand "shape" the bigram cost ignores (rule #5 above) could
-  in principle be modeled** -- e.g. some specific finger pairings across
-  hands probably feel more natural than others, mirroring the inner/outer
-  roll distinction same-hand pairs already get. This was deliberately
-  *not* added: the trigram/4-gram alternation penalties already exist to
-  address the closely related concern of heavy-alternation error risk
-  (see above), so adding shape-sensitivity to the bigram cost as well
-  would mostly be solving an already-mitigated problem at the cost of
-  meaningfully more code. Worth revisiting only if evidence suggests the
-  current penalties are missing something the shape-aware version
-  wouldn't.
+- **A 4-key fully-alternating run (L-R-L-R) hides two real same-hand
+  transitions that nothing in this model evaluates.** Each hand doesn't
+  sit idle between its two strokes in the run -- the left hand is already
+  moving from key 1 toward key 3 while the right hand presses key 2, and
+  the right hand moves from key 2 toward key 4 while the left hand
+  presses key 3. So there's a real "key 1 to key 3" same-hand transition
+  and a real "key 2 to key 4" same-hand transition physically happening,
+  each with its own roll direction/distance/finger-strength cost exactly
+  like an ordinary bigram -- but `bigram_cost` is only ever evaluated on
+  *adjacent* pairs when scanning the corpus (positions i, i+1), never on
+  a "skip one" pair like (1, 3) or (2, 4), so this cost is invisible to
+  the model entirely, regardless of whether that skipped transition would
+  be a cheap inward roll or an expensive outward pinky stretch. This was
+  deliberately *not* added: the trigram/4-gram alternation penalties
+  already exist to address the closely related concern of heavy-
+  alternation error risk (see above), so adding skip-bigram evaluation
+  on top would mostly be solving an already-mitigated problem at the
+  cost of meaningfully more code. Worth revisiting only if
+  evidence suggests the flat alternation penalty is missing something a
+  skip-bigram-aware version wouldn't.
 - **Pinky/ring-only and hand-alternation facts are charged at more than
   one order** (bigram pinky/ring pairs, trigram/4-gram pinky-ring runs;
   bigram different-hand cost, trigram/4-gram full-alternation runs). This
@@ -256,9 +263,11 @@ alternation penalties specifically also stand in for an error-correction
 cost (heavy alternation risking more mistakes at speed) that a pure
 per-keystroke effort tally has no other way to represent, and that
 penalty is deliberately left as a flat per-window cost rather than also
-making the bigram cost shape-sensitive to which fingers pair up across
-hands -- the alternation penalty already covers the concern that would
-motivate that extra complexity. The per-order `weights` in `config.yaml`
+evaluating the same-hand "skip" transitions hidden inside an alternating
+run (key 1 to key 3, key 2 to key 4) that bigram_cost's adjacent-pairs-
+only design can't see -- the alternation penalty already covers the
+concern (heavy-alternation error risk) that would motivate building that
+extra machinery. The per-order `weights` in `config.yaml`
 are the supported way to rebalance how much each order contributes to the
 total without touching the cost functions themselves — currently used to
 deliberately push orders 4/5 (weight 12.0 each) into acting like a soft

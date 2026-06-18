@@ -33,9 +33,13 @@ Revisions made relative to the R source (see claude.md Section 3.2):
   overhead that produces typing errors at speed -- a cost this model has
   no other way to charge for. That's a deliberate choice to fill a real
   gap rather than a double-count of motion effort already charged at the
-  bigram level (the flat different-hand bigram cost doesn't distinguish
-  an easy cross-hand pairing from an awkward one, so nothing here repeats
-  that). Because this means the same underlying motion can be charged at
+  bigram level: bigram_cost only ever evaluates *adjacent* pairs, so it
+  cannot see the same-hand "skip" transitions hidden inside an
+  alternating run (e.g. in a 4-key L-R-L-R sequence, the left hand
+  physically moves from key 1 to key 3 while the right hand presses key
+  2, and that real same-hand motion is never evaluated by anything in
+  this module). Deliberately not modeled further -- see COST_RULES.md's
+  analysis section for why. Because this means the same underlying motion can be charged at
   more than one order, the per-order `weights` in `fitness.py`/
   `config.yaml` (default 1.0 each) are the intended way to rebalance how
   much influence each order has on the total, rather than editing the
