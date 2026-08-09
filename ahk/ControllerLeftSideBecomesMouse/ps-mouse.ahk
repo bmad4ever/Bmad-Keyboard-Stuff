@@ -16,11 +16,26 @@ BoostMult     := 4       ; speed while boost held
 DeadZone      := 10      ; stick-center dead zone (0-50 percent)
 L1Button      := 5       ; left click button number (1-based)
 L2Button      := 7       ; right click button number (1-based)
-BoostButton   := 2       ; turbo boost button number (1-based)
-ToggleButton  := 11      ; toggles between default x1 and slowest x0.4
+ZoomInButton  := 6       ; zoom in button (Ctrl + WheelUp)
+ZoomOutButton := 8       ; zoom out button (Ctrl + WheelDown)
+EscButton     := 3       ; escape key button number (1-based)
+EnterButton   := 2       ; enter key button number (1-based)
+DesktopButton := 13      ; show desktop (Win+D) button number (1-based)
+CloseButton   := 9       ; close window (Alt+F4) button number (1-based)
+BoostButton   := 1       ; turbo boost button number (1-based)
+ToggleButton  := 14      ; toggles between default x1 and slowest x0.4
+MaximizeButton := 4      ; maximize window (Win+Up) button number (1-based)
+WinTabButton  := 10      ; windows+tab (task view) button number (1-based)
+TabButton     := 12      ; tab key button number (1-based)
+ShiftTabButton := 11     ; shift+tab button number (1-based)
 ReverseX      := 0       ; 1 to flip horizontal
 ReverseY      := 0       ; 1 to flip vertical
 PollInterval  := 10      ; ms between cursor polls
+ScrollSpeed   := 30      ; right-stick wheel notches per second at full deflection
+ScrollReverse := 0       ; 1 to invert right-stick scroll direction
+RightXOffset  := 16      ; joyGetPosEx offset for right-stick X (16=dwZpos; 20=dwRpos)
+RightYOffset  := 20      ; joyGetPosEx offset for right-stick Y (20=dwRpos; 24=dwUpos)
+ZoomSpeed     := 40      ; zoom steps per second while a zoom button is held
 DebugMode     := 0       ; 1 = print live axis + button readout
 ; ================================
 
@@ -49,13 +64,29 @@ RButtonDown := 0
 PrevUp := 0
 PrevDown := 0
 PrevToggle := 0
+ScrollAccum := 0
+ShiftHeld := 0
+ZoomAccum := 0
+PrevNav := 0
+PrevEsc := 0
+PrevEnter := 0
+PrevDesktop := 0
+PrevClose := 0
+PrevTab := 0
+PrevShiftTab := 0
+PrevWinTab := 0
+PrevMaximize := 0
 Sensitivity := SensBase * SensTable[SensIndex]
 
 SetTimer, CursorPoll, %PollInterval%
 
+#InputLevel 1
 Esc::ExitApp
+#InputLevel 0
 
 ^Esc::
+    Send, {Shift up}
+    ShiftHeld := 0
     Suspend, Toggle
     Pause, Toggle, 1
     return
@@ -78,6 +109,8 @@ CursorPoll:
     POV := NumGet(JIP, 40, "UInt")   ; dwPOV hat switch
     Uaxis := NumGet(JIP, 24, "UInt") ; dwUpos (often D-pad up/down axis)
     Vaxis := NumGet(JIP, 28, "UInt") ; dwVpos (often D-pad left/right axis)
+    Zpos := NumGet(JIP, RightYOffset, "UInt") ; right-stick Y axis
+    Rpos := NumGet(JIP, RightXOffset, "UInt") ; right-stick X axis
 
     ; ---- D-pad up/down adjusts sensitivity ----
     Up := 0
@@ -108,6 +141,16 @@ CursorPoll:
     }
     PrevUp := Up
     PrevDown := Down
+
+    ; ---- POV left/right: browser back/forward ----
+    Nav := 0
+    if (POV = 27000)
+        Nav := -1   ; back
+    else if (POV = 9000)
+        Nav := 1    ; forward
+    if (Nav and not PrevNav)
+        Send, % (Nav = -1) ? "!{Left}" : "!{Right}"
+    PrevNav := Nav
 
     ; ---- button 11: toggle default x1 <-> slowest x0.4 ----
     Tgl := (Btn & (1 << (ToggleButton - 1))) ? 1 : 0
@@ -163,6 +206,137 @@ CursorPoll:
         DllCall("mouse_event", "UInt", 0x0001, "Int", DX, "Int", DY, "UInt", 0, "UPtr", 0)
     }
 
+    ; ---- right stick = scroll wheel ----
+    ; vertical by default; hold Shift when deflected mostly sideways for horizontal scroll
+    RX := (Rpos - Center) / Range
+    RY := (Zpos - Center) / Range
+    if (Abs(RX) < Thresh)
+        RX := 0
+    if (Abs(RY) < Thresh)
+        RY := 0
+    if ScrollReverse
+    {
+        RX := -RX
+        RY := -RY
+    }
+
+    Horiz := (Abs(RX) > Abs(RY))
+    RV := Horiz ? RX : RY
+
+    if (RV = 0)
+    {
+        ScrollAccum := 0
+        if ShiftHeld
+        {
+            ShiftHeld := 0
+            Send, {Shift up}
+        }
+    }
+    else
+    {
+        if Horiz
+        {
+            if not ShiftHeld
+            {
+                ShiftHeld := 1
+                Send, {Shift down}
+            }
+        }
+        else if ShiftHeld
+        {
+            ShiftHeld := 0
+            Send, {Shift up}
+        }
+        ScrollAccum += RV * ScrollSpeed * PollInterval / 1000
+        while (ScrollAccum >= 1 or ScrollAccum <= -1)
+        {
+            if (ScrollAccum > 0)
+            {
+                Send, {WheelDown}
+                ScrollAccum -= 1
+            }
+            else
+            {
+                Send, {WheelUp}
+                ScrollAccum += 1
+            }
+        }
+    }
+
+    ; ---- zoom buttons (Ctrl + scroll wheel) ----
+    Zoom := 0
+    if (Btn & (1 << (ZoomInButton - 1)))
+        Zoom := 1
+    else if (Btn & (1 << (ZoomOutButton - 1)))
+        Zoom := -1
+    else
+        ZoomAccum := 0
+
+    if (Zoom != 0)
+    {
+        ZoomAccum += Zoom * ZoomSpeed * PollInterval / 1000
+        while (ZoomAccum >= 1 or ZoomAccum <= -1)
+        {
+            if (ZoomAccum > 0)
+            {
+                Send, ^{WheelUp}
+                ZoomAccum -= 1
+            }
+            else
+            {
+                Send, ^{WheelDown}
+                ZoomAccum += 1
+            }
+        }
+    }
+
+    ; ---- escape / enter buttons ----
+    EscP := (Btn & (1 << (EscButton - 1))) ? 1 : 0
+    if (EscP and not PrevEsc)
+        Send, {Esc}
+    PrevEsc := EscP
+
+    EntP := (Btn & (1 << (EnterButton - 1))) ? 1 : 0
+    if (EntP and not PrevEnter)
+        Send, {Enter}
+    PrevEnter := EntP
+
+    DskP := (Btn & (1 << (DesktopButton - 1))) ? 1 : 0
+    if (DskP and not PrevDesktop)
+        Send, #d
+    PrevDesktop := DskP
+
+    ClsP := (Btn & (1 << (CloseButton - 1))) ? 1 : 0
+    if (ClsP and not PrevClose)
+        Send, !{F4}
+    PrevClose := ClsP
+
+    TabP := (Btn & (1 << (TabButton - 1))) ? 1 : 0
+    if (TabP and not PrevTab)
+        Send, {Tab}
+    PrevTab := TabP
+
+    STabP := (Btn & (1 << (ShiftTabButton - 1))) ? 1 : 0
+    if (STabP and not PrevShiftTab)
+        Send, +{Tab}
+    PrevShiftTab := STabP
+
+    WTabP := (Btn & (1 << (WinTabButton - 1))) ? 1 : 0
+    if (WTabP and not PrevWinTab)
+        Send, #{Tab}
+    PrevWinTab := WTabP
+
+    MaxP := (Btn & (1 << (MaximizeButton - 1))) ? 1 : 0
+    if (MaxP and not PrevMaximize)
+    {
+        WinGet, MaxState, MinMax, A
+        if (MaxState = 1)
+            WinMinimize, A
+        else
+            WinMaximize, A
+    }
+    PrevMaximize := MaxP
+
     ; ---- buttons ----
     if (Btn & (1 << (L1Button - 1)))
     {
@@ -205,6 +379,6 @@ CursorPoll:
                 Btns .= A_Index . " "
         }
         Mult := SensTable[SensIndex]
-        ToolTip, X=%X% Y=%Y% DX=%DX% DY=%DY% POV=%POV% U=%Uaxis% V=%Vaxis%`ncx=%cx% cy=%cy% nx=%nx% ny=%ny%`nL1=%L1% L2=%L2% Boost=%BT% Sens=%Sensitivity% (x%Mult%)`nBtns=%Btns%
+        ToolTip, X=%X% Y=%Y% DX=%DX% DY=%DY% POV=%POV% U=%Uaxis% V=%Vaxis% RX=%RX% RY=%RY% Shift=%ShiftHeld% Zoom=%Zoom%`ncx=%cx% cy=%cy% nx=%nx% ny=%ny%`nL1=%L1% L2=%L2% Boost=%BT% Sens=%Sensitivity% (x%Mult%)`nBtns=%Btns%
     }
     return
