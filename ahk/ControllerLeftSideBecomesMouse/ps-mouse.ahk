@@ -99,16 +99,14 @@ Sensitivity := SensBase * SensTable[SensIndex]
 
 SetTimer, CursorPoll, %PollInterval%
 
-#InputLevel 1
-Esc::ExitApp
-#InputLevel 0
 
-^Esc::
-    Send, {Shift up}
-    ShiftHeld := 0
-    Suspend, Toggle
-    Pause, Toggle, 1
-    return
+; Optional Suspend Shortcut
+;^Esc::
+;    Send, {Shift up}
+;    ShiftHeld := 0
+;    Suspend, Toggle
+;    Pause, Toggle, 1
+;    return
 
 HideSens:
     ToolTip
