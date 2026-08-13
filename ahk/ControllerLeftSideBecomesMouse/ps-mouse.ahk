@@ -12,9 +12,10 @@ SensTable     := [0.4, 0.7, 1.0, 1.5, 2.7]   ; multipliers: 2 below, default, 2 
 SensIndex     := 3       ; start at default (1.0) - AHK arrays are 1-based
 UpButton      := 0       ; D-pad up button number - SET THIS
 DownButton    := 0       ; D-pad down button number - SET THIS
-BoostMult     := 4       ; speed while boost held
 DeadZone      := 10      ; stick-center dead zone (0-50 percent)
 SpecStickDead   := 0.25  ; special-state stick center dead zone (higher than cursor DeadZone)
+RepeatMinSpeed  := 1     ; state-2 arrow auto-repeat per second at dead-zone edge
+RepeatMaxSpeed  := 50    ; state-2 arrow auto-repeat per second at full deflection
 L1Button      := 5       ; left click button number (1-based)
 L2Button      := 7       ; right click button number (1-based)
 ZoomInButton  := 6       ; zoom in button (Ctrl + WheelUp)
@@ -23,8 +24,8 @@ EscButton     := 3       ; escape key (normal); Win+Tab in special state
 EnterButton   := 2       ; enter key button number (1-based)
 DesktopButton := 13      ; show desktop (Win+D) button number (1-based)
 DesktopPrevButton := 9    ; button 9: previous desktop (Alt+F4 in special state)
-BoostButton   := 1       ; turbo boost button number (1-based)
-ToggleButton  := 14      ; toggles between default x1 and slowest x0.4
+CtrlButton    := 1       ; Ctrl hold button number (1-based)
+Special2Button := 14     ; hold for special state 2 (clipboard actions)
 SpecialButton := 4       ; hold for special window-management state
 DesktopNextButton := 10  ; button 10: next desktop
 TabButton     := 12      ; tab key button number (1-based)
@@ -66,9 +67,9 @@ LButtonDown := 0
 RButtonDown := 0
 PrevUp := 0
 PrevDown := 0
-PrevToggle := 0
 ScrollAccum := 0
 ShiftHeld := 0
+CtrlHeld := 0
 ZoomAccum := 0
 PrevNav := 0
 PrevEsc := 0
@@ -80,12 +81,26 @@ PrevTab := 0
 PrevShiftTab := 0
 SpecialState := 0
 PrevSpecial := 0
+Special2State := 0
+PrevSpecial2 := 0
+Prev2C := 0
+Prev2X := 0
+Prev2Del := 0
+Prev2V := 0
+Prev2Z := 0
+Prev2ZR := 0
+Prev2Y := 0
+Prev2Stick := 0
+Prev2Ctrl := 0
+Prev2Space := 0
+Prev2AltGr := 0
 PrevSpPov := 65535
 PrevSpcPrevDesktop := 0
 PrevSpcWinTab := 0
 PrevSpcCenter := 0
 PrevStickZone := 0
 ZoneForSector := [4, 8, 6, 7, 3, 1, 5, 2]
+ArrowTable := ["Right", "Right Up", "Up", "Up Left", "Left", "Left Down", "Down", "Down Right"]
 PrevSpcF11 := 0
 PrevSpcRoll := 0
 RollActive := 0
@@ -134,6 +149,208 @@ CursorPoll:
     Range  := 32767
     Thresh := DeadZone / 100
 
+    ; ---- button 14: hold to activate special state 2 ----
+    Sp2P := (Btn & (1 << (Special2Button - 1))) ? 1 : 0
+    Special2State := Sp2P
+    if (Sp2P and not PrevSpecial2)
+    {
+        Prev2C := 0
+        Prev2X := 0
+        Prev2Del := 0
+        Prev2V := 0
+        Prev2Z := 0
+        Prev2ZR := 0
+        Prev2Y := 0
+        Prev2Ctrl := 0
+        Prev2Space := 0
+        Prev2AltGr := 0
+        Prev2Stick := 0
+        RepeatAcc2 := 0
+        Prev2PovD := 0
+        if ShiftHeld
+        {
+            ShiftHeld := 0
+            Send, {Shift up}
+        }
+        if CtrlHeld
+        {
+            CtrlHeld := 0
+            Send, {Ctrl up}
+        }
+        ToolTip, Special State 2 ON
+        SetTimer, HideSens, 1200
+    }
+    PrevSpecial2 := Sp2P
+
+    ; ---- release held keys when leaving state 2 ----
+    if (Sp2P = 0 and (Prev2Stick != 0 or Prev2Ctrl or Prev2Space or Prev2AltGr))
+    {
+        if (Prev2Stick != 0)
+        {
+            Sp2Arrows := ArrowTable[Prev2Stick]
+            Loop, Parse, Sp2Arrows, %A_Space%
+                Send, {%A_LoopField% up}
+            Prev2Stick := 0
+            RepeatAcc2 := 0
+        }
+        if Prev2Ctrl
+        {
+            Send, {Ctrl up}
+            Prev2Ctrl := 0
+        }
+        if Prev2Space
+        {
+            Send, {Space up}
+            Prev2Space := 0
+        }
+        if Prev2AltGr
+        {
+            Send, {RAlt up}
+            Prev2AltGr := 0
+        }
+    }
+
+    ; ---- special state 2: clipboard actions, normal functions disabled ----
+    if Special2State
+    {
+        Sp2C := (Btn & (1 << (CtrlButton - 1))) ? 1 : 0
+        if (Sp2C and not Prev2C)
+            Send, ^c
+        Prev2C := Sp2C
+
+        Sp2X := (Btn & (1 << (EnterButton - 1))) ? 1 : 0
+        if (Sp2X and not Prev2X)
+            Send, ^x
+        Prev2X := Sp2X
+
+        Sp2Del := (Btn & (1 << (EscButton - 1))) ? 1 : 0
+        if (Sp2Del and not Prev2Del)
+            Send, {Delete}
+        Prev2Del := Sp2Del
+
+        Sp2V := (Btn & (1 << (SpecialButton - 1))) ? 1 : 0
+        if (Sp2V and not Prev2V)
+            Send, ^v
+        Prev2V := Sp2V
+
+        Sp2Z := (Btn & (1 << (L2Button - 1))) ? 1 : 0
+        if (Sp2Z and not Prev2Z)
+            Send, ^z
+        Prev2Z := Sp2Z
+
+        Sp2ZR := (Btn & (1 << (ZoomOutButton - 1))) ? 1 : 0
+        if (Sp2ZR and not Prev2ZR)
+            Send, ^+z
+        Prev2ZR := Sp2ZR
+
+        Sp2Y := (Btn & (1 << (ZoomInButton - 1))) ? 1 : 0
+        if (Sp2Y and not Prev2Y)
+            Send, ^y
+        Prev2Y := Sp2Y
+
+        ; ---- button 5: Ctrl hold / button 12: Space hold ----
+        if (Btn & (1 << (L1Button - 1)))
+        {
+            if not Prev2Ctrl
+                Send, {Ctrl down}
+            Prev2Ctrl := 1
+        }
+        else if Prev2Ctrl
+        {
+            Send, {Ctrl up}
+            Prev2Ctrl := 0
+        }
+
+        ; ---- button 11/12: Space hold ----
+        if ((Btn & (1 << (TabButton - 1))) or (Btn & (1 << (ShiftTabButton - 1))))
+        {
+            if not Prev2Space
+                Send, {Space down}
+            Prev2Space := 1
+        }
+        else if Prev2Space
+        {
+            Send, {Space up}
+            Prev2Space := 0
+        }
+
+        ; ---- button 10: AltGr (RAlt) hold ----
+        if (Btn & (1 << (DesktopNextButton - 1)))
+        {
+            if not Prev2AltGr
+            {
+                Send, {RAlt down}
+                Prev2AltGr := 1
+            }
+        }
+        else if Prev2AltGr
+        {
+            Send, {RAlt up}
+            Prev2AltGr := 0
+        }
+
+        ; ---- d-pad down: Alt+Enter ----
+        PovD2 := (POV = 18000) ? 1 : 0
+        if (PovD2 and not Prev2PovD)
+            Send, !{Enter}
+        Prev2PovD := PovD2
+
+        ; ---- sticks: arrows (8 cardinals, diagonals = 2 keys), left mirrors right ----
+        R2X := (Rpos - Center) / Range
+        R2Y := -(Zpos - Center) / Range
+        L2X := (X - Center) / Range
+        L2Y := -(Y - Center) / Range
+        zone := 0
+        Mag2 := 0
+        if (L2X*L2X + L2Y*L2Y >= SpecStickDead * SpecStickDead)
+        {
+            ang := ATan2(L2Y, L2X)
+            ang := Mod(ang + 382.5, 360)
+            zone := Floor(ang / 45) + 1
+            Mag2 := Sqrt(L2X*L2X + L2Y*L2Y)
+        }
+        if (zone = 0 and R2X*R2X + R2Y*R2Y >= SpecStickDead * SpecStickDead)
+        {
+            ang := ATan2(R2Y, R2X)
+            ang := Mod(ang + 382.5, 360)
+            zone := Floor(ang / 45) + 1
+            Mag2 := Sqrt(R2X*R2X + R2Y*R2Y)
+        }
+        if (zone != Prev2Stick)
+        {
+            if (Prev2Stick != 0)
+            {
+                Sp2Arrows := ArrowTable[Prev2Stick]
+                Loop, Parse, Sp2Arrows, %A_Space%
+                    Send, {%A_LoopField% up}
+            }
+            if (zone != 0)
+            {
+                Sp2Arrows := ArrowTable[zone]
+                Loop, Parse, Sp2Arrows, %A_Space%
+                    Send, {%A_LoopField% down}
+            }
+            Prev2Stick := zone
+            RepeatAcc2 := 0
+        }
+        else if (zone != 0)
+        {
+            Mag2 := Min(Mag2, 1)
+            Mag2 := Max(Mag2, SpecStickDead)
+            Norm := (Mag2 - SpecStickDead) / (1 - SpecStickDead)
+            CurSpd := RepeatMinSpeed + Norm * (RepeatMaxSpeed - RepeatMinSpeed)
+            RepeatAcc2 += PollInterval
+            while (RepeatAcc2 >= 1000 / CurSpd)
+            {
+                RepeatAcc2 -= 1000 / CurSpd
+                Sp2Arrows := ArrowTable[zone]
+                Loop, Parse, Sp2Arrows, %A_Space%
+                    Send, {%A_LoopField% down}
+            }
+        }
+        return
+    }
+
     ; ---- button 4: hold to activate special window-management state ----
     SpcP := (Btn & (1 << (SpecialButton - 1))) ? 1 : 0
     SpecialState := SpcP
@@ -152,6 +369,11 @@ CursorPoll:
         {
             ShiftHeld := 0
             Send, {Shift up}
+        }
+        if CtrlHeld
+        {
+            CtrlHeld := 0
+            Send, {Ctrl up}
         }
         ToolTip, Special State ON
         SetTimer, HideSens, 1200
@@ -348,23 +570,6 @@ CursorPoll:
         Send, % (Nav = -1) ? "!{Left}" : "!{Right}"
     PrevNav := Nav
 
-    ; ---- button 11: toggle default x1 <-> slowest x0.4 ----
-    Tgl := (Btn & (1 << (ToggleButton - 1))) ? 1 : 0
-    if (Tgl and not PrevToggle)
-    {
-        if (SensIndex = 1)
-            SensIndex := 3
-        else if (SensIndex != 3)
-            SensIndex := 3
-        else
-            SensIndex := 1
-        Sensitivity := SensBase * SensTable[SensIndex]
-        Mult := SensTable[SensIndex]
-        ToolTip, Sensitivity: %Sensitivity% (x%Mult%)
-        SetTimer, HideSens, 1200
-    }
-    PrevToggle := Tgl
-
     ; ---- center + dead zone (axis range 0-65535) ----
     DX := (X - Center) / Range
     DY := (Y - Center) / Range
@@ -376,11 +581,6 @@ CursorPoll:
     DX *= 200 * Sensitivity
     DY *= 200 * Sensitivity
 
-    if (Btn & (1 << (BoostButton - 1)))
-    {
-        DX *= BoostMult
-        DY *= BoostMult
-    }
     if (ReverseX)
         DX := -DX
     if (ReverseY)
@@ -482,6 +682,21 @@ CursorPoll:
         }
     }
 
+    ; ---- button 1: Ctrl hold ----
+    if (Btn & (1 << (CtrlButton - 1)))
+    {
+        if not CtrlHeld
+        {
+            CtrlHeld := 1
+            Send, {Ctrl down}
+        }
+    }
+    else if CtrlHeld
+    {
+        CtrlHeld := 0
+        Send, {Ctrl up}
+    }
+
     ; ---- escape / enter buttons ----
     EscP := (Btn & (1 << (EscButton - 1))) ? 1 : 0
     if (EscP and not PrevEsc)
@@ -552,7 +767,7 @@ CursorPoll:
     {
         L1 := (Btn & (1 << (L1Button - 1))) ? "1" : "0"
         L2 := (Btn & (1 << (L2Button - 1))) ? "1" : "0"
-        BT := (Btn & (1 << (BoostButton - 1))) ? "1" : "0"
+        CT := (Btn & (1 << (CtrlButton - 1))) ? "1" : "0"
         Btns := ""
         Loop 32
         {
@@ -560,7 +775,7 @@ CursorPoll:
                 Btns .= A_Index . " "
         }
         Mult := SensTable[SensIndex]
-        ToolTip, X=%X% Y=%Y% DX=%DX% DY=%DY% POV=%POV% U=%Uaxis% V=%Vaxis% RX=%RX% RY=%RY% Shift=%ShiftHeld% Zoom=%Zoom%`ncx=%cx% cy=%cy% nx=%nx% ny=%ny%`nL1=%L1% L2=%L2% Boost=%BT% Sens=%Sensitivity% (x%Mult%)`nBtns=%Btns%
+        ToolTip, X=%X% Y=%Y% DX=%DX% DY=%DY% POV=%POV% U=%Uaxis% V=%Vaxis% RX=%RX% RY=%RY% Shift=%ShiftHeld% Zoom=%Zoom%`ncx=%cx% cy=%cy% nx=%nx% ny=%ny%`nL1=%L1% L2=%L2% Ctrl=%CT% Sens=%Sensitivity% (x%Mult%)`nBtns=%Btns%
     }
     return
 
